@@ -9,9 +9,24 @@
   <div class="message_holder"></div>
 
   <form action="" method="POST">
-    <input type="text" class="username" placeholder="User Name"/>
-    <input type="text" class="message" placeholder="Messages"/>
-    <input type="submit"/>
+    <label>
+      User Name:
+      <input type="text" class="username" placeholder="User Name"/>
+    </label>
+    <label>
+      Your message:
+      <input type="text" class="message" placeholder="Messages"/>
+    </label>
+    <button type="submit">Send</button>
+  </form>
+
+  <br>
+  <br>
+  <form action="" method="POST">
+    <label>Room Name:
+      <input type="text" name="room_name" required>
+    </label>
+    <button type="submit">Request Room</button>
   </form>
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -27,11 +42,15 @@
       socket.emit( 'group-message', {
         data: 'User Connected'
       })
-      var form = $( 'form' ).on( 'submit', function(e) {
+      var form = $('form').on( 'submit', function(e) {
         e.preventDefault()
         let user_name = $( 'input.username' ).val()
         let user_input = $( 'input.message' ).val()
         socket.emit( 'group-message', {
+          // https://stackoverflow.com/questions/5543490/json-naming-convention
+          // I do like the idea of using snake case for JSON.
+          // pure JS should be writen in camelCase though (standard for JS)
+          // CSS...? seems to be kebab-case
           user_name : user_name,
           message : user_input
         } )
@@ -46,6 +65,7 @@
         $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
       }
     })
+
   </script>
 
 </body>

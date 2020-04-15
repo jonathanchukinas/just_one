@@ -2,7 +2,7 @@
 # https://codeburst.io/building-your-first-chat-application-using-flask-in-7-minutes-f98de4adfa5d
 
 from flask import Flask, render_template
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room, leave_room
 
 
 app = Flask(__name__)
@@ -24,11 +24,21 @@ def handle_my_custom_event(json, methods=['GET', 'POST']):
     socketio.emit('my response', json, callback=messageReceived)
 
 
-# I think the codeburst tutorial was overly verbose.
-# Let's see if I can simplify...
-# @socketio.on('message')
-# def handle_message(message):
-#     socketio.emit(message)
+# TODO what naming convention for the event names? snake_case?
+@socketio.on('join_room_requested')
+def join_room_requested(data):
+    user_name = data['user_name']
+    room_name = data['room_name']
+    join_room(room_name)
+    socketio.send(f'{user_name} has entered the room.', room=room_name)
+
+
+@socketio.on('leave_room_requested')
+def leave_room_requested(data):
+    user_name = data['user_name']
+    room_name = data['room_name']
+    leave_room(room_name)
+    socketio.send(f'{user_name} has left the room.', room=room_name)
 
 
 if __name__ == '__main__':
