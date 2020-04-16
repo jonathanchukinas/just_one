@@ -12,7 +12,13 @@ socketio = SocketIO(app)
 
 @app.route('/')
 def sessions():
-    return render_template('session.html')
+    print('Someone just connected')
+    return render_template('session.html')    
+
+
+@socketio.on('disconnect')
+def on_disconnect():
+    print('Client disconnected')
 
 
 # From Codeburst tutorial:
