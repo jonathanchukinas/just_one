@@ -1,102 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Flask_Chat_App</title>
+  <title>Simple Chat Room</title>
 </head>
 <body>
 
-  <h3 id="message_placeholder" style='color: #ccc;font-size: 30px;'>No message yet..</h3>
 
-  <ul id="message_holder"></ul>
-  <hr>
+  <ul id="messages"></ul>
+  <input type="text" id="message_text">
+  <button id="message_send">Send</button>
 
-  <form action="" id="message_form" method="POST">
-    <label>
-      User Name:
-      <input type="text" id="user_name" class="username" placeholder="user name"/>
-    </label>
-    <label>
-      Your message:
-      <input type="text" id="message_text" class="message" placeholder="message"/>
-    </label>
-    <button type="submit">Send</button>
-  </form>
-
-  <br>
-  <br>
-
-  <form action="" method="POST" id="room_form">
-    <label>Room Name:
-      <input type="text" name="room_name" placeholder="room name" required>
-    </label>
-    <button type="submit">Request Room</button>
-  </form>
-
-  <hr>
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
-  <script type="text/javascript">
+  <script>
 
-    // const socket = io('http://' + document.domain + ':' + location.port);
-    const socket = io();
-    
-    // TODO temp:
-    console.log('I am logging something')
-    console.log(document.domain)
-    console.log(location.port)
+    $(() => {
+      
+      const socket = io();
+      
+      socket.on('connect', () => {
+        socket.send('A user has connected!');
+      });
 
-    socket.on('connect', () => {
+      socket.on('message', (msg) => {
+        $("#messages").append('<li>'+msg+'</li>');
+      });
 
-      // TODO what is difference b/w send and emit?
-      socket.emit( 'group-message', {
-        data: 'User Connected'
-      })
+      $('#message_send').on('click', () => {
+        const msg = $('#message_text').val();
+        socket.send(msg);
+        $('#message_text').val('');
+      });
 
-      // var message_form = $('#message_form').on('submit', function(e) {
-      $('#message_form').on('submit', function(e) {
-        e.preventDefault()
-        let user_name = $( 'input.username' ).val()
-        let user_input = $( 'input.message' ).val()
-        socket.emit( 'group-message', {
-          // https://stackoverflow.com/questions/5543490/json-naming-convention
-          // I do like the idea of using snake case for JSON.
-          // pure JS should be writen in camelCase though (standard for JS)
-          // CSS...? seems to be kebab-case
-          user_name : user_name,
-          message : user_input
-        })
-        $( 'input.message' ).val( '' ).focus()
-      })
+    });
 
-      // TODO Do I need to declare a var at all?
-      var room_form = $('#room_form').on('submit', function(e) {
-        e.preventDefault()
-        let user_name = $('#user_name').val()
-        let room_name = $('#room_name').val()
-        socket.emit('join_room_requested', {
-          user_name : user_name,
-          message : user_input
-        })
-        $('#message_text').val( '' ).focus()
-        
-      })
 
-    })
 
-    socket.on('my response', function(msg) {
-      console.log( msg )
-      if( typeof msg.user_name !== 'undefined' ) {
-        $('#message_placeholder').remove()
-        $('#message_holder').append( '<li><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</li>')
-      }
-    })
+      // var room_form = $('#room_form').on('submit', function(e) {
+      //   e.preventDefault()
+      //   let user_name = $('#user_name').val()
+      //   let room_name = $('#room_name').val()
+      //   socket.emit('join_room_requested', {
+      //     user_name : user_name,
+      //     message : user_input
+      //   })
+      //   $('#message_text').val( '' ).focus()        
+      // })
+
+
+    // socket.on('my response', function(msg) {
+    //   console.log( msg )
+    //   if( typeof msg.user_name !== 'undefined' ) {
+    //     $('#message_placeholder').remove()
+    //     $('#messages').append( '<li><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</li>')
+    //   }
+    // })
 
     // TODO what are the standard event types?
     // connect
     // message
     // ...?
+    // TODO how to automatically deal with JS semicolons?
 
   </script>
 

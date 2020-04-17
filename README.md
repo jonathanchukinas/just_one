@@ -36,6 +36,7 @@
 - Players have optional names
 - Hide json info cheaters could potentially use
 - prod server
+- autoformatting (e.g. Black for python, Prettier for JS)
 
 
 # Staged Approached:
