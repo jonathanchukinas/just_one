@@ -49,11 +49,13 @@
 
     socket.on('connect', () => {
 
+      // TODO what is difference b/w send and emit?
       socket.emit( 'group-message', {
         data: 'User Connected'
       })
 
-      var form = $('#message_form').on('submit', function(e) {
+      // var message_form = $('#message_form').on('submit', function(e) {
+      $('#message_form').on('submit', function(e) {
         e.preventDefault()
         let user_name = $( 'input.username' ).val()
         let user_input = $( 'input.message' ).val()
@@ -69,7 +71,7 @@
       })
 
       // TODO Do I need to declare a var at all?
-      var form = $('#room_form').on('submit', function(e) {
+      var room_form = $('#room_form').on('submit', function(e) {
         e.preventDefault()
         let user_name = $('#user_name').val()
         let room_name = $('#room_name').val()
@@ -78,6 +80,7 @@
           message : user_input
         })
         $('#message_text').val( '' ).focus()
+        
       })
 
     })
@@ -89,6 +92,11 @@
         $('#message_holder').append( '<li><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</li>')
       }
     })
+
+    // TODO what are the standard event types?
+    // connect
+    // message
+    // ...?
 
   </script>
 
