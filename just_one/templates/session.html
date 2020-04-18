@@ -4,9 +4,9 @@
   <title>Simple Chat Room</title>
   <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="font-mono">
+<body class="font-mono p-1">
 
-  <h1 class="text-red-700 text-2xl font-extrabold p-6 bg-blue-200">SocketIO Demo</h1>
+  <h1 class="text-red-700 text-2xl font-extrabold p-6 bg-blue-200 mb-1">SocketIO Demo</h1>
 
   <div class="flex">
 
@@ -24,14 +24,26 @@
         Your Name:
         <input type="text" id="player_name" class="mb-3 border border-gray-500">
       </label>
-      <form id="custom_event_form">
+      <form id="custom_event_form" class="mb-6">
         <input type="text" id="custom_event_form_text" class="border border-gray-500">
+        <input type="submit" value="Send">
+      </form>
+      <!-- ROOM request -->
+      <h2 class="text-red-500 text-lg font-bold mb-3">rooms</h2>
+      <form id="room_request_form">
+        <label for="requested_room_name">Room Name:</label>
+        <input type="text" id="requested_room_name" class="mb-3 border border-gray-500">
+        <input type="submit" value="Request">
+      </form>
+      <form id="room_message_form">
+        <label for="room_message">Room Message:</label>
+        <input type="text" id="room_message" class="mb-3 border border-gray-500">
         <input type="submit" value="Send">
       </form>
     </div>
 
     <!-- GLOBAL CHAT -->
-    <div class="flex-1 bg-blue-200 p-6 m-1 mt-1">
+    <div class="flex-1 bg-blue-200 p-6 m-1 mt-0">
       <h2 class="text-red-500 text-lg font-bold mb-1">Global Chat</h2>
       <ul id="messages"></ul>
     </div>
@@ -41,42 +53,16 @@
       <h2 class="text-red-500 text-lg font-bold mb-3">Room Chat</h2>
       <label>
         Current Room:
-        <input type="text" disabled value="Some Room Name" class="bg-transparent text-red-500 mb-3">
+        <input id="current_room_name" type="text" disabled placeholder="--no room selected--" class="bg-transparent text-red-500 mb-3">
       </label>
+      <input id="leave_room" type="submit" value="Leave" class="cursor-pointer">
       <ul id="room_messages"></ul>
     </div>
 
   </div>
-  <div class="bg-blue-100 h-10"></div>
+  <div class="bg-blue-100 h-6"></div>
 
   
-<!-- 
-  <h2 class="text-red-500 text-lg font-bold">message event</h2>
-  <form id="message_form">
-    <input type="text" id="message_form_text">
-    <input type="submit" value="Send">
-  </form>
-  <hr>
-
-
-  <h2 class="text-red-500 text-lg font-bold">custom event</h2>
-  <label>
-    Your Name:
-    <input type="text" id="player_name">
-  </label>
-  <form id="custom_event_form">
-    <input type="text" id="custom_event_form_text">
-    <input type="submit" value="Send">
-  </form> -->
-
-
-  <!-- <h2>'json' event</h2>
-  <form id="json_event_form">
-    <input type="text" id="json_event_form_text">
-    <input type="submit" value="Send">
-  </form> -->
-
-
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
@@ -93,7 +79,8 @@
       });
 
       socket.on('message', (msg) => {
-        $("#messages").prepend('<li>'+msg+'</li>');
+        container = $('#messages');
+        renderSimpleMessage(container, msg);
       });
 
       $('#message_form').submit((e) => {
@@ -123,10 +110,12 @@
         msg_input.val('').focus();
       });
 
-      socket.on('message_with_name', (message_object) => {
-        player_name = message_object.player_name;
-        msg = message_object.msg;
-        $("#messages").prepend('<li><b>'+player_name+':</b> '+msg+'<span> '+message_object.mykey+'</span></li>');
+      socket.on('message_with_name', (payload) => {
+        const container = $("#messages");
+        const message = payload.msg;
+        const player_name = payload.player_name;
+        // $("#messages").prepend('<li><b>'+player_name+':</b> '+msg+'<span> '+message_object.mykey+'</span></li>');
+        renderNamedMessage(container, message, player_name)
       });
 
       // Messages as json events:
@@ -158,21 +147,77 @@
       // Bottom line is: I won't be using the json event. I can't even imagine using
       // the 'message' event either. 
 
+      // ROOM request
+      $('#room_request_form').submit((e) => {
+        e.preventDefault();
+        const input_room = $('#requested_room_name');
+        const requested_room_name = input_room.val();
+        const payload = {
+          room_name: requested_room_name,
+        };
+        socket.emit('room_request', payload);
+        input_room.val('')
+        $('#room_message').focus();
+      });
+
+      socket.on('room_confirmed', (payload) => {
+        room_name = payload.room_name;
+        $('#current_room_name').val(room_name);
+      });
+
+      $('#room_message_form').submit((e) => {
+        e.preventDefault();
+        const input_message = $('#room_message');
+        const message = input_message.val();
+        const payload = {
+          message: message,
+          player_name: playerName(),
+          room_name: currentRoomName(),
+        };
+        socket.emit('room_message', payload);
+        input_message.val('').focus();
+      });
+      
+      socket.on('room_message', (payload) => {
+        const container = $('#room_messages');
+        const message = payload.message;
+        const player_name = payload.player_name;
+        renderNamedMessage(container, message, player_name);
+      });
+
+      $('#leave_room').click(() => {
+        socket.emit('leave_room', {
+          room_name: currentRoomName(),
+          player_name: playerName(),
+        });
+      });
+
+      socket.on('leave_room', (payload) => {
+        $('#current_room_name').val('');
+        $('#room_messages').contents('');
+        $('#room_message').focus();
+      });
+
+
+
     });
 
+    function renderSimpleMessage(container, message) {
+      container.prepend('<li>'+message+'</li>');
+    }
 
+    function renderNamedMessage(container, message, player_name) {
+      container.prepend('<li><b>'+player_name+':</b> '+message+'</li>');
+    };
 
+    function playerName() {
+      return $('#player_name').val();
+    }
 
-      // var room_form = $('#room_form').on('submit', function(e) {
-      //   e.preventDefault()
-      //   let user_name = $('#user_name').val()
-      //   let room_name = $('#room_name').val()
-      //   socket.emit('join_room_requested', {
-      //     user_name : user_name,
-      //     message : user_input
-      //   })
-      //   $('#message_text').val( '' ).focus()        
-      // })
+    function currentRoomName() {
+      return $('#current_room_name').val();
+    }
+
 
 
     // socket.on('my response', function(msg) {

@@ -38,15 +38,32 @@ def handle_message(json):
 @socketio.on('json')
 def handle_message(json):
     print('json event:', json)
-    # emit('message_with_name', json, broadcast=True)
 
 
-# @socketio.on('join')
-# def join_room_requested(data):
-#     user_name = data['user_name']
-#     room_name = data['room_name']
-#     join_room(room_name)
-#     socketio.send(f'{user_name} has entered the room.', room=room_name)
+@socketio.on('room_request')
+def handle_room_request(payload):
+    room_name = payload['room_name']
+    join_room(room_name)
+    msg = f'Someone has joined the `{room_name}` room.'
+    emit('room_confirmed', payload)
+    send(msg, broadcast=True)
+    # TODO remove from all other rooms
+
+@socketio.on('room_message')
+def handle_room_message(payload):
+    room_name = payload['room_name']
+    emit('room_message', payload, room=room_name)
+
+@socketio.on('leave_room')
+def handle_leave_room(payload):
+    room_name = payload['room_name']
+    leave_room(room_name)
+    emit('leave_room', payload)
+    player_name = payload['player_name']
+    msg = f'{player_name} has left the `{room_name}` room.'
+    send(msg, broadcast=True)
+
+
 
 
 # @socketio.on('leave_room_requested')
