@@ -24,12 +24,21 @@ def sessions():
 
 @socketio.on('message')
 def handle_simple_message(msg):
+    print('message event:', msg)
     send(msg, broadcast=True)
 
 
 @socketio.on('message_with_name')
 def handle_message(json):
+    print('custom event:', json)
+    json['mykey'] = '_'
     emit('message_with_name', json, broadcast=True)
+
+
+@socketio.on('json')
+def handle_message(json):
+    print('json event:', json)
+    # emit('message_with_name', json, broadcast=True)
 
 
 # @socketio.on('join')

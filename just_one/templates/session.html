@@ -5,40 +5,35 @@
 </head>
 <body>
 
-  <h1>SocketcoIO Demo</h1>
-  <hr>
-
-
-  <h2>Simple Messages</h2>
+  <h1>SocketIO Demo</h1>
   <ul id="messages"></ul>
+  <hr>
+  
 
-
-  <h3>First Pass</h3>
-  <input type="text" id="message_text">
-  <button id="message_send">Send</button>
-
-
-  <h3>Add Form</h3>
+  <h2>'message' event</h2>
   <form id="message_form">
     <input type="text" id="message_form_text">
     <input type="submit" value="Send">
   </form>
-
-
   <hr>
-  <h2>JSON Messages</h2>
-  <ul id="messages_json"></ul>
 
 
-  <h3>First Pass</h3>
+  <h2>custom event</h2>
   <label>
     Your Name:
     <input type="text" id="player_name">
   </label>
-  <form id="message_form_json">
-    <input type="text" id="message_form_json_text">
+  <form id="custom_event_form">
+    <input type="text" id="custom_event_form_text">
     <input type="submit" value="Send">
   </form>
+
+
+  <!-- <h2>'json' event</h2>
+  <form id="json_event_form">
+    <input type="text" id="json_event_form_text">
+    <input type="submit" value="Send">
+  </form> -->
 
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -60,12 +55,6 @@
         $("#messages").append('<li>'+msg+'</li>');
       });
 
-      $('#message_send').on('click', () => {
-        const msg = $('#message_text').val();
-        socket.send(msg);
-        $('#message_text').val('');
-      });
-
       $('#message_form').submit((e) => {
         e.preventDefault();
         const msg_input = $('#message_form_text');
@@ -76,9 +65,9 @@
 
       // Messages as custom events:
 
-      $('#message_form_json').submit((e) => {
+      $('#custom_event_form').submit((e) => {
         e.preventDefault();
-        const msg_input = $('#message_form_json_text');
+        const msg_input = $('#custom_event_form_text');
         // keys and values
         const player_name = $('#player_name').val();
         const msg = msg_input.val();
@@ -96,8 +85,37 @@
       socket.on('message_with_name', (message_object) => {
         player_name = message_object.player_name;
         msg = message_object.msg;
-        $("#messages").append('<li><b>'+player_name+':</b> '+msg+'</li>');
+        $("#messages").append('<li><b>'+player_name+':</b> '+msg+'<span> '+message_object.mykey+'</span></li>');
       });
+
+      // Messages as json events:
+
+      $('#json_event_form').submit((e) => {
+        e.preventDefault();
+        const msg_input = $('#json_event_form_text');
+        const player_name = $('#player_name').val();
+        const msg = msg_input.val();
+        // build object
+        const message_object = {
+          player_name: player_name,
+          msg: msg,
+        };
+        // send json
+        socket.emit('json', message_object);
+        // cleanup
+        msg_input.val('').focus();
+      });
+      // Lesson learned:
+      // Both the socket.send and socket.json.send method convert stuff to text
+      // This causes it to be received as a message event my the server.
+      // If I want the server to receive a 'json' event, the best way I found to 
+      // implement this client-side is to emit a json event, as shown above.
+      // Maybe this is the way your *supposed* to do it? But it just seems odd to me.
+      // It acts exactly like a custom event named 'json'. The only difference is that
+      // flask-socketio has 'json' as a reserved event name. But if you didn't know
+      // that, you'd just name something 'json' and not even know. I don't get it...
+      // Bottom line is: I won't be using the json event. I can't even imagine using
+      // the 'message' event either. 
 
     });
 
