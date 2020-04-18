@@ -5,10 +5,40 @@
 </head>
 <body>
 
+  <h1>SocketcoIO Demo</h1>
+  <hr>
 
+
+  <h2>Simple Messages</h2>
   <ul id="messages"></ul>
+
+
+  <h3>First Pass</h3>
   <input type="text" id="message_text">
   <button id="message_send">Send</button>
+
+
+  <h3>Add Form</h3>
+  <form id="message_form">
+    <input type="text" id="message_form_text">
+    <input type="submit" value="Send">
+  </form>
+
+
+  <hr>
+  <h2>JSON Messages</h2>
+  <ul id="messages_json"></ul>
+
+
+  <h3>First Pass</h3>
+  <label>
+    Your Name:
+    <input type="text" id="player_name">
+  </label>
+  <form id="message_form_json">
+    <input type="text" id="message_form_json_text">
+    <input type="submit" value="Send">
+  </form>
 
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -20,6 +50,8 @@
       
       const socket = io();
       
+      // Messages as 'message' events:
+
       socket.on('connect', () => {
         socket.send('A user has connected!');
       });
@@ -34,7 +66,41 @@
         $('#message_text').val('');
       });
 
+      $('#message_form').submit((e) => {
+        e.preventDefault();
+        const msg_input = $('#message_form_text');
+        const msg = msg_input.val();
+        socket.send(msg);
+        msg_input.val('').focus();
+      });
+
+      // Messages as custom events:
+
+      $('#message_form_json').submit((e) => {
+        e.preventDefault();
+        const msg_input = $('#message_form_json_text');
+        // keys and values
+        const player_name = $('#player_name').val();
+        const msg = msg_input.val();
+        // build object
+        const message_object = {
+          player_name: player_name,
+          msg: msg,
+        };
+        // send message
+        socket.emit('message_with_name', message_object);
+        // cleanup
+        msg_input.val('').focus();
+      });
+
+      socket.on('message_with_name', (message_object) => {
+        player_name = message_object.player_name;
+        msg = message_object.msg;
+        $("#messages").append('<li><b>'+player_name+':</b> '+msg+'</li>');
+      });
+
     });
+
 
 
 

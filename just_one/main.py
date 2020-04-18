@@ -2,7 +2,7 @@
 # https://codeburst.io/building-your-first-chat-application-using-flask-in-7-minutes-f98de4adfa5d
 
 from flask import Flask, render_template, request
-from flask_socketio import SocketIO, join_room, leave_room, send
+from flask_socketio import SocketIO, join_room, leave_room, send, emit
 # The Pretty Print tut (https://www.youtube.com/watch?v=RdSrkkrj3l4) imports `send` here as well
 
 
@@ -27,7 +27,12 @@ def handle_simple_message(msg):
     send(msg, broadcast=True)
 
 
-# @socketio.on('join_room_requested')
+@socketio.on('message_with_name')
+def handle_message(json):
+    emit('message_with_name', json, broadcast=True)
+
+
+# @socketio.on('join')
 # def join_room_requested(data):
 #     user_name = data['user_name']
 #     room_name = data['room_name']
