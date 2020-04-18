@@ -2,15 +2,56 @@
 <html lang="en">
 <head>
   <title>Simple Chat Room</title>
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="font-mono">
 
-  <h1>SocketIO Demo</h1>
-  <ul id="messages"></ul>
-  <hr>
+  <h1 class="text-red-700 text-2xl font-extrabold p-6 bg-blue-200">SocketIO Demo</h1>
+
+  <div class="flex">
+
+    <!-- INPUTS -->
+    <div class="flex-1 bg-blue-100 p-6">
+      <!-- MESSAGE event -->
+      <h2 class="text-red-500 text-lg font-bold mb-3">message event</h2>
+      <form id="message_form" >
+        <input type="text" id="message_form_text" class="mb-6 border border-gray-500">
+        <input type="submit" value="Send">
+      </form>
+      <!-- CUSTOM event -->
+      <h2 class="text-red-500 text-lg font-bold mb-3">custom event</h2>
+      <label>
+        Your Name:
+        <input type="text" id="player_name" class="mb-3 border border-gray-500">
+      </label>
+      <form id="custom_event_form">
+        <input type="text" id="custom_event_form_text" class="border border-gray-500">
+        <input type="submit" value="Send">
+      </form>
+    </div>
+
+    <!-- GLOBAL CHAT -->
+    <div class="flex-1 bg-blue-200 p-6 m-1 mt-1">
+      <h2 class="text-red-500 text-lg font-bold mb-1">Global Chat</h2>
+      <ul id="messages"></ul>
+    </div>
+
+    <!-- ROOM CHAT -->
+    <div class="flex-1 bg-blue-100 p-6">
+      <h2 class="text-red-500 text-lg font-bold mb-3">Room Chat</h2>
+      <label>
+        Current Room:
+        <input type="text" disabled value="Some Room Name" class="bg-transparent text-red-500 mb-3">
+      </label>
+      <ul id="room_messages"></ul>
+    </div>
+
+  </div>
+  <div class="bg-blue-100 h-10"></div>
+
   
-
-  <h2>'message' event</h2>
+<!-- 
+  <h2 class="text-red-500 text-lg font-bold">message event</h2>
   <form id="message_form">
     <input type="text" id="message_form_text">
     <input type="submit" value="Send">
@@ -18,7 +59,7 @@
   <hr>
 
 
-  <h2>custom event</h2>
+  <h2 class="text-red-500 text-lg font-bold">custom event</h2>
   <label>
     Your Name:
     <input type="text" id="player_name">
@@ -26,7 +67,7 @@
   <form id="custom_event_form">
     <input type="text" id="custom_event_form_text">
     <input type="submit" value="Send">
-  </form>
+  </form> -->
 
 
   <!-- <h2>'json' event</h2>
@@ -52,7 +93,7 @@
       });
 
       socket.on('message', (msg) => {
-        $("#messages").append('<li>'+msg+'</li>');
+        $("#messages").prepend('<li>'+msg+'</li>');
       });
 
       $('#message_form').submit((e) => {
@@ -85,7 +126,7 @@
       socket.on('message_with_name', (message_object) => {
         player_name = message_object.player_name;
         msg = message_object.msg;
-        $("#messages").append('<li><b>'+player_name+':</b> '+msg+'<span> '+message_object.mykey+'</span></li>');
+        $("#messages").prepend('<li><b>'+player_name+':</b> '+msg+'<span> '+message_object.mykey+'</span></li>');
       });
 
       // Messages as json events:

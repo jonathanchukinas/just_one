@@ -37,7 +37,7 @@
 - Hide json info cheaters could potentially use
 - prod server
 - autoformatting (e.g. Black for python, Prettier for JS)
-- deterministic package mgt via e.g. pipenv
+- deterministic package mgt via e.g. pipenv and yarn
 - fix flask dev server polling issue with e.g. eventlet or gevent. Ensure thread-safe db access.
 
 
