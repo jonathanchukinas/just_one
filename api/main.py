@@ -1,10 +1,6 @@
-# Tutorial:
-# https://codeburst.io/building-your-first-chat-application-using-flask-in-7-minutes-f98de4adfa5d
-
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
-# The Pretty Print tut (https://www.youtube.com/watch?v=RdSrkkrj3l4) imports `send` here as well
-
+from pathlib import Path
 
 
 # Here's Miguel Grinberg (author: Flask-=SocketIO) on writing a React/Flask app:
@@ -12,14 +8,20 @@ from flask_socketio import SocketIO, join_room, leave_room, send, emit
 
 
 
+# template_path = Path('__file__').parent.parent / 'ui' / 'src'
+# print(template_path.absolute())
+# print(template_path.resolve())
+
+# app = Flask(__name__, template_folder=template_path)
 app = Flask(__name__)
+print(app.template_folder)
 app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
 socketio = SocketIO(app)
 
 
 @app.route('/')
 def sessions():
-    return render_template('session.html')    
+    return render_template('session.html')
 
 
 @socketio.on('message')
@@ -49,10 +51,12 @@ def handle_room_request(payload):
     send(msg, broadcast=True)
     # TODO remove from all other rooms
 
+
 @socketio.on('room_message')
 def handle_room_message(payload):
     room_name = payload['room_name']
     emit('room_message', payload, room=room_name)
+
 
 @socketio.on('leave_room')
 def handle_leave_room(payload):
@@ -64,26 +68,8 @@ def handle_leave_room(payload):
     send(msg, broadcast=True)
 
 
-
-
-# @socketio.on('leave_room_requested')
-# def leave_room_requested(data):
-#     user_name = data['user_name']
-#     room_name = data['room_name']
-#     leave_room(room_name)
-#     socketio.send(f'{user_name} has left the room.', room=room_name)
-
-
 if __name__ == '__main__':
     socketio.run(app, debug=True)
-
-
-# QUESTIONS
-# What is purpose of callbacks? Is it code executed client-side or server side?
-# Is Broadcast always true?
-# Look up emit() and send() in the docs
-# The send() and emit() "context-specific" functions are different from socketio.emit() somehow? 
-
 
 # TASKS
 # TODO fix my user settings word dictionary

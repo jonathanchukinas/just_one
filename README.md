@@ -20,13 +20,13 @@
 
 # Technologies to get layered in
 - Flask
-- Rooms
 - SocketIO
+- Rooms
+- XState
 - React 
 - store local files
 - Store messages on server (with timestamps)
 - Client and server sync back and forth to make sure client has all messages
-- XState
 - Store only unconfirmed messages on server
 - client-generated UID
 - server-generated player ID
