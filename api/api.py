@@ -16,12 +16,12 @@ from pathlib import Path
 app = Flask(__name__)
 print(app.template_folder)
 app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins='http://localhost:5000')
 
 
-@app.route('/')
-def sessions():
-    return render_template('session.html')
+# @app.route('/')
+# def sessions():
+#     return render_template('session.html')
 
 
 @socketio.on('message')
@@ -69,7 +69,7 @@ def handle_leave_room(payload):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, port=3000, debug=True)
 
 # TASKS
 # TODO fix my user settings word dictionary
