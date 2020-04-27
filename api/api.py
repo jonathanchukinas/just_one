@@ -14,7 +14,7 @@ from pathlib import Path
 
 # app = Flask(__name__, template_folder=template_path)
 app = Flask(__name__)
-print(app.template_folder)
+# print(app.template_folder)
 app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
 socketio = SocketIO(app, cors_allowed_origins='http://localhost:5000')
 
@@ -26,20 +26,21 @@ socketio = SocketIO(app, cors_allowed_origins='http://localhost:5000')
 
 @socketio.on('message')
 def handle_simple_message(msg):
-    print('message event:', msg)
+    # print('message event:', msg)
     send(msg, broadcast=True)
 
 
 @socketio.on('message_with_name')
 def handle_message(json):
-    print('custom event:', json)
+    # print('custom event:', json)
     json['mykey'] = '_'
     emit('message_with_name', json, broadcast=True)
 
 
 @socketio.on('json')
 def handle_message(json):
-    print('json event:', json)
+    # print('json event:', json)
+    pass
 
 
 @socketio.on('room_request')

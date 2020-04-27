@@ -72,11 +72,7 @@
       
       const socket = io('http://localhost:3000/');
       
-      // Messages as 'message' events:
 
-      socket.on('connect', () => {
-        socket.send('A user has connected!');
-      });
 
       socket.on('message', (msg) => {
         container = $('#messages');
