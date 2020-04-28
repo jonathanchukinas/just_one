@@ -20,15 +20,15 @@ export default function ButtonsGame() {
         isComplete: true,
       },
       {
-        playerID: 1,
-        playerName: 'Jonathan2',
-        isSelf: true,
-        isComplete: false,
-      },
-      {
         playerID: 3,
         playerName: 'Nicholas',
         isSelf: false,
+        isComplete: false,
+      },
+      {
+        playerID: 4,
+        playerName: 'ImpossibleAlterEgo',
+        isSelf: true,
         isComplete: false,
       },
     ]
