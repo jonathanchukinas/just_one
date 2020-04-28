@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import socket from './socket.js';
+import socket from '../socket.js';
 import ChatAppRequestRoom from './ChatAppRequestRoom';
 
 export default function ChatAppSendRoom(props) {
