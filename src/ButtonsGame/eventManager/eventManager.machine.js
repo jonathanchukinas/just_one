@@ -1,6 +1,5 @@
 import { Machine, assign } from 'xstate';
 
-
 const eventMgrMachine = Machine({
   id: 'eventMachine',
   context: {
@@ -24,20 +23,15 @@ const eventMgrMachine = Machine({
                   unk: {
                     on: {
                       '': [
-                        { target: 'yes', cond: 'areUnorderedEvents' },
-                        { target: 'no' },
+                        {target: 'yes'},
+                        {target: 'no'},
                       ],
-                    },
+                    }
                   },
                   yes: {},
                   no: {
                     id: 'noUnorderedEvents',
-                    on: {
-                      '': {
-                        target: '#syncComplete',
-                        in: '#noMissingEvents',
-                      }
-                    }
+                    type: 'final',
                   },
                 },
             },
@@ -48,19 +42,16 @@ const eventMgrMachine = Machine({
                   yes: {},
                   no: {
                     id: 'noMissingEvents',
-                    on: {
-                      '': {
-                        target: '#syncComplete',
-                        in: '#noMissingEvents',
-                      }
-                    }
+                    type: 'final',
                   },
                 },
             },
           },
+          onDone: {target: '#syncComplete'},
         },
         syncComplete: {
-          id: 'syncComplete'
+          id: 'syncComplete',
+          activities: [ 'pollingServer' ],
         },
       },
     },
@@ -76,11 +67,19 @@ const eventMgrMachine = Machine({
 },{
   actions: {
   },
+  activities: {
+    pollingServer: ACTIVITY_pollingServer,
+  },
   guards: {
-    
   },
 });
 
+
+function ACTIVITY_pollingServer() {
+  const msg = 'Polling server for new events'
+  const interval = setInterval(() => console.log(msg), 5000);
+  return () => clearInterval(interval);
+}
 
 
 

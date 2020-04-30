@@ -1,3 +1,7 @@
+//
+//
+//
+
 const eventMgrMachine = Machine({
   id: 'eventMachine',
   context: {
@@ -48,7 +52,8 @@ const eventMgrMachine = Machine({
           onDone: {target: '#syncComplete'},
         },
         syncComplete: {
-          id: 'syncComplete'
+          id: 'syncComplete',
+          activities: [ 'pollingServer' ],
         },
       },
     },
@@ -64,6 +69,18 @@ const eventMgrMachine = Machine({
 },{
   actions: {
   },
+  activities: {
+    pollingServer: ACTIVITY_pollingServer,
+  },
   guards: {
   },
 });
+
+
+function ACTIVITY_pollingServer() {
+  const msg = 'Polling server for new events'
+  const interval = setInterval(() => console.log(msg), 5000);
+  return () => clearInterval(interval);
+}
+
+
