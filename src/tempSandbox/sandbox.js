@@ -23,15 +23,5 @@ function greeter(person) {
 ;
 var user = new Student("Jane", "M.", "User");
 ;
-var myUuid = '123';
-var myGuid = '456';
-var secondUuid = myGuid;
-var myStr = 'abc';
-function convertToUuid(value) {
-    var newUuid = value;
-    return newUuid;
-}
-console.log(convertToUuid(123));
 ;
-var myEvent = { uuidRoom: '123' };
 document.body.textContent = greeter(user);

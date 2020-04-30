@@ -3,5 +3,8 @@
     "activityBar.background": "#5A0939",
     "titleBar.activeBackground": "#7E0D4F",
     "titleBar.activeForeground": "#FFFCFD"
-  }
+  },
+  "cSpell.words": [
+    "Chrono"
+  ]
 }
