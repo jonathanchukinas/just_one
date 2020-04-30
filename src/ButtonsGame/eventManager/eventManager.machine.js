@@ -27,7 +27,17 @@ const existUnorderedEvents = {
 const existMissingEvents = {
   initial: 'unk',
     states: {
-      unk: {},
+      unk: {
+        on: {
+          '': [
+            { 
+              target: 'yes',
+              cond: 'areMissingEvents',
+            },
+            { target: 'no' },
+          ],
+        },
+      },
       yes: {},
       no: {
         id: 'noMissingEvents',
@@ -84,7 +94,8 @@ const eventMgrMachine = Machine({
     pollingServer: ACTIVITY_pollingServer,
   },
   guards: {
-    areUnorderedEvents: GUARD_areUnorderedEvents, 
+    areUnorderedEvents: GUARD_areUnorderedEvents,
+    areMissingEvents: GUARD_areMissingEvents,
   },
 });
 
@@ -96,7 +107,11 @@ function ACTIVITY_pollingServer() {
 }
 
 function GUARD_areUnorderedEvents() {
-  //...
+  return false
+}
+
+function GUARD_areMissingEvents() {
+  return false
 }
 
 /*
