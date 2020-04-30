@@ -7,8 +7,11 @@ const existUnorderedEvents = {
       unk: {
         on: {
           '': [
-            {target: 'yes'},
-            {target: 'no'},
+            {
+              target: 'yes',
+              cond: 'areUnorderedEvents',
+            },
+            { target: 'no'},
           ],
         }
       },
@@ -81,7 +84,7 @@ const eventMgrMachine = Machine({
     pollingServer: ACTIVITY_pollingServer,
   },
   guards: {
-
+    areUnorderedEvents: GUARD_areUnorderedEvents, 
   },
 });
 
@@ -90,6 +93,10 @@ function ACTIVITY_pollingServer() {
   const msg = 'Polling server for new events'
   const interval = setInterval(() => console.log(msg), 5000);
   return () => clearInterval(interval);
+}
+
+function GUARD_areUnorderedEvents() {
+  //...
 }
 
 /*
