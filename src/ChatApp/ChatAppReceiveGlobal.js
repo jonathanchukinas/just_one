@@ -1,6 +1,6 @@
 import React from 'react';
 import ChatAppMessageList from './ChatAppMessageList';
-import socket from '../socket.js';
+import socket from '../eventManager/socket.js';
 
 
 export default function ChatAppGlobal(props) {
