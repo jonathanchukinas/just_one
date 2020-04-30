@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import HelloServerButton from './HelloServerDemo/HelloServerButton';
-import ChatApp from './ChatApp/ChatApp';
 import NavBar from './NavBar';
+import ChatApp from './ChatApp/App';
 import ButtonsGame from './ButtonsGame/App';
+import HelloServerButton from './HelloServerDemo/App';
 
 
 export default function App() {
