@@ -2,48 +2,51 @@ import { Machine, assign } from 'xstate';
 
 
 const existUnorderedEvents = {
+  id: 'unorderedEvents',
   initial: 'unk',
-    states: {
-      unk: {
-        on: {
-          '': [
-            {
-              target: 'yes',
-              cond: 'areUnorderedEvents',
-            },
-            { target: 'no'},
-          ],
-        }
-      },
-      yes: {},
-      no: {
-        id: 'noUnorderedEvents',
-        type: 'final',
-      },
+  states: {
+    unk: {
+      on: {
+        '': [
+          {
+            target: 'yes',
+            cond: 'areUnorderedEvents',
+          },
+          { target: 'no'},
+        ],
+      }
     },
+    yes: {
+      
+    },
+    no: {
+      id: 'noUnorderedEvents',
+      type: 'final',
+    },
+  },
 }
 
 
 const existMissingEvents = {
   initial: 'unk',
-    states: {
-      unk: {
-        on: {
-          '': [
-            { 
-              target: 'yes',
-              cond: 'areMissingEvents',
-            },
-            { target: 'no' },
-          ],
-        },
-      },
-      yes: {},
-      no: {
-        id: 'noMissingEvents',
-        type: 'final',
+  states: {
+    unk: {
+      on: {
+        '': [
+          { 
+            target: 'yes',
+            cond: 'areMissingEvents',
+          },
+          { target: 'no' },
+        ],
       },
     },
+    yes: {},
+    no: {
+      id: 'noMissingEvents',
+      type: 'final',
+    },
+  },
 }
 
 
@@ -84,6 +87,9 @@ const eventMgrMachine = Machine({
           activities: [ 'pollingServer' ],
         },
       },
+      on: {
+        ADD_UNORDERED_EVENT: '#unorderedEvents.yes'
+      },
     },
     existUnexecutedEvents: { ...existUnexecutedEvents },
   },
@@ -116,8 +122,9 @@ function GUARD_areMissingEvents() {
 
 /*
 
-existUnorderedEvents
+UnorderedEvents
 need guard that checks for existing unordered events
+
 
 existMissingEvents
 need guard to check for missing events
