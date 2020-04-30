@@ -1,5 +1,5 @@
 import React from 'react';
-import socket from './eventManager/socket.js';
+import socket from '../socket.js';
 
 export default function HelloServerButton() {
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import HelloServerButton from './HelloServerButton';
+import HelloServerButton from './HelloServerDemo/HelloServerButton';
 import ChatApp from './ChatApp/ChatApp';
 import NavBar from './NavBar';
-import ButtonsGame from './ButtonsGame/ButtonsGame';
+import ButtonsGame from './ButtonsGame/App';
 
 
 export default function App() {
@@ -23,7 +23,7 @@ export default function App() {
   ];
 
   const [currentPage, setCurrentPage] = useState(
-    navLinks[0].page
+    navLinks[2].page
   );
   
   return (<>

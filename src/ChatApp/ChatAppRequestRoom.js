@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import socket from '../eventManager/socket.js';
+import socket from '../socket.js';
 
 // TODO check all function names
 export default function ChatAppRequestRoom(props) {
