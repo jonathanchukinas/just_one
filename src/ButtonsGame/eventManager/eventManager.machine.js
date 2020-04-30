@@ -1,7 +1,47 @@
 import { Machine, assign } from 'xstate';
 
 
+const existUnorderedEvents = {
+  initial: 'unk',
+    states: {
+      unk: {
+        on: {
+          '': [
+            {target: 'yes'},
+            {target: 'no'},
+          ],
+        }
+      },
+      yes: {},
+      no: {
+        id: 'noUnorderedEvents',
+        type: 'final',
+      },
+    },
+}
 
+
+const existMissingEvents = {
+  initial: 'unk',
+    states: {
+      unk: {},
+      yes: {},
+      no: {
+        id: 'noMissingEvents',
+        type: 'final',
+      },
+    },
+}
+
+
+const existUnexecutedEvents = {
+  initial: 'unk',
+  states: {
+    unk: {},
+    yes: {},
+    no: {},
+  },
+}
 
 
 const eventMgrMachine = Machine({
@@ -21,35 +61,8 @@ const eventMgrMachine = Machine({
         syncInProgress: {
           type: 'parallel',
           states: {
-            existUnorderedEvents: {
-              initial: 'unk',
-                states: {
-                  unk: {
-                    on: {
-                      '': [
-                        {target: 'yes'},
-                        {target: 'no'},
-                      ],
-                    }
-                  },
-                  yes: {},
-                  no: {
-                    id: 'noUnorderedEvents',
-                    type: 'final',
-                  },
-                },
-            },
-            existMissingEvents: {
-              initial: 'unk',
-                states: {
-                  unk: {},
-                  yes: {},
-                  no: {
-                    id: 'noMissingEvents',
-                    type: 'final',
-                  },
-                },
-            },
+            existUnorderedEvents: { ...existUnorderedEvents },
+            existMissingEvents: { ...existMissingEvents },
           },
           onDone: {target: '#syncComplete'},
         },
@@ -59,14 +72,7 @@ const eventMgrMachine = Machine({
         },
       },
     },
-    existUnexecutedEvents: {
-      initial: 'unk',
-      states: {
-        unk: {},
-        yes: {},
-        no: {},
-      },
-    },
+    existUnexecutedEvents: { ...existUnexecutedEvents },
   },
 },{
   actions: {
@@ -75,6 +81,7 @@ const eventMgrMachine = Machine({
     pollingServer: ACTIVITY_pollingServer,
   },
   guards: {
+
   },
 });
 
