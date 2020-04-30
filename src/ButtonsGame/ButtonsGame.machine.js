@@ -30,8 +30,8 @@ const buttonsGameMachine = Machine({
     },
   },
 },{
-  action: {
-    incrementRoundNum: context => (context.roundNum++)
+  actions: {
+    incrementRoundNum: context => context.roundNum++,
   },
   guards: {
     isEndGame: context => (context.roundNum == context.finalRoundNum),
@@ -39,4 +39,4 @@ const buttonsGameMachine = Machine({
 },  
 );
 
-console.log("hello!")
+export default buttonsGameMachine
