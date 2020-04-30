@@ -1,5 +1,9 @@
 import { Machine, assign } from 'xstate';
 
+
+
+
+
 const eventMgrMachine = Machine({
   id: 'eventMachine',
   context: {
@@ -80,6 +84,24 @@ function ACTIVITY_pollingServer() {
   const interval = setInterval(() => console.log(msg), 5000);
   return () => clearInterval(interval);
 }
+
+/*
+
+existUnorderedEvents
+need guard that checks for existing unordered events
+
+existMissingEvents
+need guard to check for missing events
+
+handle incoming confirmed messages
+handle new unordered messages
+existUnexecutredEvents: 
+  check for unexecuted events
+  function to send those events to
+
+I should assume in the beginning that this all works well synchronously .
+But later may have to do periodic checks to see if any queues have accumulated?
+*/
 
 
 
