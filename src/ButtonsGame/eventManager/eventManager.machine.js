@@ -53,7 +53,17 @@ const existMissingEvents = {
 const existUnexecutedEvents = {
   initial: 'unk',
   states: {
-    unk: {},
+    unk: {
+      on: {
+        '': [
+          { 
+            target: 'yes',
+            cond: 'areUnexecutedEvents',
+          },
+          { target: 'no' },
+        ],
+      },
+    },
     yes: {},
     no: {},
   },
@@ -102,6 +112,7 @@ const eventMgrMachine = Machine({
   guards: {
     areUnorderedEvents: GUARD_areUnorderedEvents,
     areMissingEvents: GUARD_areMissingEvents,
+    areUnexecutedEvents: GUARD_areUnexecutedEvents,
   },
 });
 
@@ -117,6 +128,10 @@ function GUARD_areUnorderedEvents() {
 }
 
 function GUARD_areMissingEvents() {
+  return false
+}
+
+function GUARD_areUnexecutedEvents() {
   return false
 }
 
