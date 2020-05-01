@@ -1,14 +1,19 @@
 import React from 'react';
 import { useMachine } from '@xstate/react';
-import buttonMachine from './Button.machine';
+import buttonMachineFactory from './Button.machine';
 
 
 export default function Button(props) {
   
-  
-  const [state, send] = useMachine(buttonMachine);
   const buttonContext = props.buttonContext;
+  const playerName = buttonContext.playerName;
+  const isSelf = buttonContext.isSelf;
 
+
+  const buttonMachine = buttonMachineFactory(playerName, isSelf);
+  const [state, send] = useMachine(buttonMachine);
+
+  
   const colors = {
     incomplete: 'red',
     complete: 'green'
