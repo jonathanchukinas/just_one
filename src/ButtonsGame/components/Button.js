@@ -12,20 +12,17 @@ export default function Button(props) {
 
   const buttonMachine = buttonMachineFactory(_playerName, _isSelf);
   const [state, send] = useMachine(buttonMachine);
+  const currentState = state.value;
   const playerName = state.context.playerName;
   const isSelf = state.context.isSelf;
+  const handleClick = ()=> {if (isSelf) { send('TOGGLE') }}
 
 
   const colors = {
     incomplete: 'red',
     complete: 'green'
   };
-  const buttonColor = colors[state.value];
-  
-
-  function handleClick() {
-    if (state.context.isSelf) { send('TOGGLE') }
-  }
+  const buttonColor = colors[currentState];
 
 
   const buttonSaturation = (
