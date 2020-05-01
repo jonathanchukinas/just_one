@@ -10,7 +10,7 @@ const buttonMachine = Machine({
     incomplete: {
       on: {
         TOGGLE: 'complete'
-      }
+      },
     },
     complete: {
       on: {

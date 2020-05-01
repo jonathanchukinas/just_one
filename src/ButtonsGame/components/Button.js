@@ -1,11 +1,23 @@
 import React from 'react';
+import { useMachine } from '@xstate/react';
+import buttonMachine from './Button.machine';
 
 
 export default function Button(props) {
-
+  
+  
+  const [state, send] = useMachine(buttonMachine);
   const buttonContext = props.buttonContext;
 
-  const buttonColor = (buttonContext.isComplete ? "green" : "red");
+  const colors = {
+    incomplete: 'red',
+    complete: 'green'
+  }
+  const buttonColor = colors[state.value];
+
+
+  console.log('button machine state', state)
+
   const buttonSaturation = (
     buttonContext.isSelf ? 
     {bg: 400, text: 900} : {bg: 100, text: 300}
