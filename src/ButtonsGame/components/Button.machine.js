@@ -16,7 +16,6 @@ const buttonMachine = Machine({
       on: {
         TOGGLE: 'incomplete'
       },
-      type: 'final'
     },
   }
 });

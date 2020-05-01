@@ -12,9 +12,9 @@ export default function Button(props) {
   const colors = {
     incomplete: 'red',
     complete: 'green'
-  }
+  };
   const buttonColor = colors[state.value];
-
+  
 
   console.log('button machine state', state)
 
@@ -30,7 +30,7 @@ export default function Button(props) {
   const buttonCss = `w-56 font-bold py-2 px-4 rounded-full ${cssBgColor} ${cssTextColor} ${cssHoverColor} ${cssBorder} ${cssNotSelf}`
   
   return (<div className="mt-6" >
-    <button className={buttonCss} >{buttonContext.playerName}</button>
+    <button className={buttonCss} onClick={()=>{send('TOGGLE')}} >{buttonContext.playerName}</button>
   </div>);
 
 }

@@ -23,7 +23,7 @@ export default function App() {
   ];
 
   const [currentPage, setCurrentPage] = useState(
-    navLinks[2].page
+    navLinks[0].page
   );
   
   return (<>
