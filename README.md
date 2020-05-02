@@ -1,5 +1,13 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Manage Dependencies
+
+### Frontend Dependencies
+The npm-installable Yarn manages the frontend javascript dependencies.
+To add a new package to the project, open a terminal in the project top-level directory: `yarn add [package name]`. This install it and adds it to `package.json`.
+
+To 
+
 ## Available Scripts
 
 In the project directory, you can run:
