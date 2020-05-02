@@ -1,16 +1,11 @@
 import React from 'react';
 import { useMachine } from '@xstate/react';
-import buttonMachineFactory from './Button.machine';
 
 
 export default function Button(props) {
   
-  const buttonContext = props.buttonContext;
-  const _playerName = buttonContext.playerName;
-  const _isSelf = buttonContext.isSelf;
 
-
-  const buttonMachine = buttonMachineFactory(_playerName, _isSelf);
+  const buttonMachine = props.machine;
   const [state, send] = useMachine(buttonMachine);
   const currentState = state.value;
   const playerName = state.context.playerName;

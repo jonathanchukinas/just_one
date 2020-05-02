@@ -1,38 +1,51 @@
 import React from 'react';
 import Button from './Button';
+import buttonMachineFactory from './Button.machine';
 
 
 export default function ButtonsGame() {
 
+  const machineInitialValues = [
+    {
+      playerID: 2,
+      playerName: 'Mike',
+      isSelf: false,
+      // TODO isCOmplete was a temporary thing...
+      
+      isComplete: true,
+    },
+    {
+      playerID: 1,
+      playerName: 'Jonathan',
+      isSelf: true,
+      isComplete: true,
+    },
+    {
+      playerID: 3,
+      playerName: 'Nicholas',
+      isSelf: false,
+      isComplete: false,
+    },
+    {
+      playerID: 4,
+      playerName: 'ImpossibleAlterEgo',
+      isSelf: true,
+      isComplete: false,
+    },
+  ]
+  function mapToMachine(obj) {
+    return {
+      playerID: obj.playerID,
+      machine: buttonMachineFactory(obj.playerName, obj.isSelf, obj.playerID),
+    }
+  };
+  const machines = machineInitialValues.map(mapToMachine)
+
+
   const gameContext = {
     roundNum: 1,
-    buttonContext: [
-      {
-        playerID: 2,
-        playerName: 'Mike',
-        isSelf: false,
-        isComplete: true,
-      },
-      {
-        playerID: 1,
-        playerName: 'Jonathan',
-        isSelf: true,
-        isComplete: true,
-      },
-      {
-        playerID: 3,
-        playerName: 'Nicholas',
-        isSelf: false,
-        isComplete: false,
-      },
-      {
-        playerID: 4,
-        playerName: 'ImpossibleAlterEgo',
-        isSelf: true,
-        isComplete: false,
-      },
-    ]
   }
+
   
   return (
     <div className="m-6" >
@@ -44,8 +57,8 @@ export default function ButtonsGame() {
           <input type="submit" />
         </label>
       </form>
-  <p>Round Number: {gameContext.roundNum}</p>      
-      {gameContext.buttonContext.map(buttonContext => <Button key={buttonContext.playerID} buttonContext={buttonContext}/> )}
+      <p>Round Number: {gameContext.roundNum}</p>      
+      {machines.map(obj => <Button key={obj.playerID} machine={obj.machine}/> )}
     </div>
   );
 

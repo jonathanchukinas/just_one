@@ -1,13 +1,14 @@
 import { Machine } from 'xstate';
 
 
-function buttonMachineFactory(playerName, isSelf) {
+function buttonMachineFactory(playerName, isSelf, playerID) {
 
   return Machine({
     id: 'button',
     context: {
       playerName: playerName,
       isSelf: isSelf,
+      playerID: playerID,
     },
     initial: 'incomplete',
     states: {
