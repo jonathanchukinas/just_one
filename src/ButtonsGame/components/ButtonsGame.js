@@ -62,9 +62,7 @@ export default function ButtonsGame() {
   }
 
 
-  const gameContext = {
-    roundNum: 1,
-  }
+  console.log(state)
 
   
   return (
@@ -77,7 +75,7 @@ export default function ButtonsGame() {
           <input type="submit" value="Create New Player" />
         </label>
       </form>
-      <p>Round Number: {gameContext.roundNum}</p>      
+      <p>Round Number: 1</p>      
       {machines.map(obj => <Button key={obj.playerID} machine={obj.machine}/> )}
     </div>
   );

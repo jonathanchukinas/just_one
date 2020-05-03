@@ -6,7 +6,8 @@ const buttonsGameMachine = Machine({
   context: {
     roundNum: 0,
     playerCount: 0,
-    finalRoundNum: 3
+    finalRoundNum: 3,
+    playerNames: [],
   },
   initial: 'idle',
   states: {
@@ -36,7 +37,15 @@ const buttonsGameMachine = Machine({
 },{
   actions: {
     incrementRoundNum: context => context.roundNum++,
-    addPlayer: ()=>{console.log('Player added!')},
+    addPlayer: assign((context, event)=>{
+      console.log('Player added!', event.playerName)
+      const { playerNames } = context
+      playerNames.push(event.playerName)
+      return {
+        ...context,
+        playerNames: playerNames,
+      }
+    }),
   },
   guards: {
     isEndGame: context => (context.roundNum == context.finalRoundNum),
