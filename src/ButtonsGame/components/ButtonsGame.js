@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from './Button';
+import buttonsGameMachine from './ButtonsGame.machine';
 import buttonMachineFactory from './Button.machine';
+import { useMachine } from '@xstate/react';
 
 
 export default function ButtonsGame() {
 
+
+  // Button Machines
   const machineInitialValues = [
     {
-      playerID: 2,
+      playerID: 12,
       playerName: 'Mike',
       isSelf: false,
       // TODO isCOmplete was a temporary thing...
@@ -15,19 +19,19 @@ export default function ButtonsGame() {
       isComplete: true,
     },
     {
-      playerID: 1,
+      playerID: 10,
       playerName: 'Jonathan',
       isSelf: true,
       isComplete: true,
     },
     {
-      playerID: 3,
+      playerID: 13,
       playerName: 'Nicholas',
       isSelf: false,
       isComplete: false,
     },
     {
-      playerID: 4,
+      playerID: 14,
       playerName: 'ImpossibleAlterEgo',
       isSelf: true,
       isComplete: false,
@@ -42,6 +46,22 @@ export default function ButtonsGame() {
   const machines = machineInitialValues.map(mapToMachine)
 
 
+  // Buttons Game Machine
+  const [state, send] = useMachine(buttonsGameMachine);
+  const [playerName, setPlayerName] = useState("");
+  const handleNewPlayerName = event => { setPlayerName(event.target.value); }
+  const newPlayerTextBox = React.createRef();
+  function handleAddPlayer(event) {
+    event.preventDefault();
+    if (playerName) {
+      send('ADD_PLAYER', { playerName: playerName })
+      setPlayerName("");
+      event.target.reset();
+      newPlayerTextBox.current.focus();
+    }
+  }
+
+
   const gameContext = {
     roundNum: 1,
   }
@@ -50,11 +70,11 @@ export default function ButtonsGame() {
   return (
     <div className="m-6" >
       <h1>The Buttons Game</h1>
-      <form>
+      <form onSubmit={ handleAddPlayer } >
         <label>
-          Your Name:
-          <input type="text" className="border-b mx-2" />
-          <input type="submit" />
+          Add Player:
+          <input type="text" ref={newPlayerTextBox} onChange={handleNewPlayerName} className="border-b mx-2" placeholder="player name" />
+          <input type="submit" value="Create New Player" />
         </label>
       </form>
       <p>Round Number: {gameContext.roundNum}</p>      

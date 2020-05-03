@@ -12,7 +12,6 @@ const buttonsGameMachine = Machine({
   states: {
     idle: {
       on: {
-        ADD_PLAYER: 'idle',
         START_GAME: 'playRound',
       }
     },
@@ -29,14 +28,19 @@ const buttonsGameMachine = Machine({
       type: 'final',
     },
   },
+  on: {
+    ADD_PLAYER: {
+      actions: 'addPlayer',
+    },
+  }
 },{
   actions: {
     incrementRoundNum: context => context.roundNum++,
+    addPlayer: ()=>{console.log('Player added!')},
   },
   guards: {
     isEndGame: context => (context.roundNum == context.finalRoundNum),
   }
-},  
-);
+});
 
 export default buttonsGameMachine
