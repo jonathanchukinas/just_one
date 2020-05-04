@@ -1,32 +1,26 @@
 import { Machine } from 'xstate';
 
 
-function buttonMachineFactory(playerName, isSelf, playerID) {
-
-  return Machine({
-    id: 'button',
-    context: {
-      playerName: playerName,
-      isSelf: isSelf,
-      playerID: playerID,
+export default Machine({
+  id: 'button',
+  context: {
+    playerName: undefined,
+    // isSelf: isSelf,
+    // playerID: playerID,
+  },
+  initial: 'pending',
+  states: {
+    pending: {
+      on: { TOGGLE: 'complete' },
     },
-    initial: 'incomplete',
-    states: {
-      incomplete: {
-        on: {
-          TOGGLE: 'complete'
-        },
-      },
-      complete: {
-        on: {
-          TOGGLE: 'incomplete'
-        },
-      },
-    }
-  });
-
-}
-
-
-
-export default buttonMachineFactory
+    complete: {
+      on: { TOGGLE: 'pending' },
+      entry: 'checkRoundEnd'
+    },
+  },
+  on: { RESET: 'pending' }
+},{
+  actions: {
+    checkRoundEnd: sendParent('CHECK_ROUND_END')
+  }
+});
