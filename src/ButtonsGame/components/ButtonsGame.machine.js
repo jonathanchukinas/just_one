@@ -1,7 +1,23 @@
 import { Machine, assign, spawn } from 'xstate';
 import buttonMachine from './Button.machine';
 
-// TODO naming convention for id?
+
+const countPendingButtons = players => {
+  const reducer = (total, playerMachine) => {
+    // console.log("about to check for pending", playerMachine.context.playerName, playerMachine)
+    if (playerMachine.value === 'pending') {
+      return total + 1
+    } else {
+      return total
+    }
+  }
+  console.log('players', players)
+  const count = Object.values(players).reduce(reducer, 0)
+  console.log(count, count)
+  return count
+}
+
+
 const buttonsGameMachine = Machine({
   id: 'game',
   context: {
@@ -29,7 +45,7 @@ const buttonsGameMachine = Machine({
         "": [
           {
             target: 'endGame',
-            cond: 'isFinalRound'
+            cond: 'isEndGame'
           },{
             target: 'round'
           },
@@ -47,7 +63,7 @@ const buttonsGameMachine = Machine({
   }
 },{
   actions: {
-    incrementRoundCount: assign({ roundCount: context => context.count + 1 }),
+    incrementRoundCount: assign({ roundCount: context => context.roundCount + 1 }),
     addPlayer: assign({
       players: (context, event) => {
         const playerName = event.playerName
@@ -65,12 +81,14 @@ const buttonsGameMachine = Machine({
   },
   guards: {
     areAllButtonsComplete: ctx => {
-      ctx.players.keys().forEach(playerRef => {
-        const playerMachine = ctx.players[playerRef]
-        const playerState = playerMachine.states
-        if (playerState !== 'complete') { return false}
-      })
-      return true
+      const players = ctx.players
+      if (countPendingButtons(players) == 0) {
+        console.log("All buttons are complete. Next round!")
+        return true
+      } else {
+        console.log("Some buttons are still pending")
+        return false
+      }      
     },
     isEndGame: context => (context.roundCount === context.finalRoundNum),
   }

@@ -8,8 +8,9 @@ export default function ButtonsGame() {
 
 
   // Buttons Game Machine
-  const [state, send] = useMachine(buttonsGameMachine);
+  const [state, send, service] = useMachine(buttonsGameMachine);
   useEffect(() => {
+    // Prepopulate players
     const initialPlayerNames = [
       "Jonathan",
       "Mike",
@@ -18,6 +19,9 @@ export default function ButtonsGame() {
     initialPlayerNames.forEach(playerName => {
       send('ADD_PLAYER', { playerName })
     })
+    // onTransition
+    service.onTransition((currentState)=>{console.log('game state', state.context.roundCount, currentState.value)})
+    send('START_GAME')
   }, [send])
 
 
@@ -37,19 +41,10 @@ export default function ButtonsGame() {
   }
 
 
-
-  console.log('state', state)
-  console.log('context', state.context)
-  console.log('players1', state.context.players)
-
-
   const players = state.context.players
-  console.log('players2', players)
   const playerNames = Object.keys(players)
-  console.log('playerNames', playerNames)
 
 
-  
   return (
     <div className="m-6" >
       <h1>The Buttons Game</h1>
