@@ -51,13 +51,14 @@ const buttonsGameMachine = Machine({
     addPlayer: assign({
       players: (context, event) => {
         const playerName = event.playerName
-        const newButtonMachineContext = { playerName }
-        const players = context.players.concat({
+        const initialContext = { playerName }
+        const players = {
+          ...context.players,
           [playerName]: spawn(
-            buttonMachine.withContext(newButtonMachineContext),
+            buttonMachine.withContext(initialContext),
             { sync: true }
-          )
-        })
+          ),
+        }
         return players
       }
     }),
@@ -67,11 +68,11 @@ const buttonsGameMachine = Machine({
       ctx.players.keys().forEach(playerRef => {
         const playerMachine = ctx.players[playerRef]
         const playerState = playerMachine.states
-        if (playerState != 'complete') { return false}
+        if (playerState !== 'complete') { return false}
       })
       return true
     },
-    isEndGame: context => (context.roundCount == context.finalRoundNum),
+    isEndGame: context => (context.roundCount === context.finalRoundNum),
   }
 });
 

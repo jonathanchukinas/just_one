@@ -1,4 +1,4 @@
-import { Machine } from 'xstate';
+import { Machine, sendParent } from 'xstate';
 
 
 export default Machine({

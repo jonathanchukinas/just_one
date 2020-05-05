@@ -1,65 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import buttonsGameMachine from './ButtonsGame.machine';
-import buttonMachineFactory from './Button.machine';
 import { useMachine } from '@xstate/react';
 
 
 export default function ButtonsGame() {
 
 
-  // Button Machines
-  const machineInitialValues = [
-    {
-      playerID: 12,
-      playerName: 'Mike',
-      isSelf: false,
-      // TODO isCOmplete was a temporary thing...
-      
-      isComplete: true,
-    },
-    {
-      playerID: 10,
-      playerName: 'Jonathan',
-      isSelf: true,
-      isComplete: true,
-    },
-    {
-      playerID: 13,
-      playerName: 'Nicholas',
-      isSelf: false,
-      isComplete: false,
-    },
-    {
-      playerID: 14,
-      playerName: 'ImpossibleAlterEgo',
-      isSelf: true,
-      isComplete: false,
-    },
-  ]
-  function mapToMachine(obj) {
-    return {
-      playerID: obj.playerID,
-      machine: buttonMachineFactory(obj.playerName, obj.isSelf, obj.playerID),
-    }
-  };
-  const machines = machineInitialValues.map(mapToMachine)
-
-
   // Buttons Game Machine
   const [state, send] = useMachine(buttonsGameMachine);
+  const initialPlayerNames = [
+    "Jonathan",
+    "Mike",
+    "Austin",
+  ]
+  // initialPlayerNames.forEach(playerName => {
+  //   send('ADD_PLAYER', { playerName })
+  // })
+
+  
+  // Add Players
   const [playerName, setPlayerName] = useState("");
   const handleNewPlayerName = event => { setPlayerName(event.target.value); }
   const newPlayerTextBox = React.createRef();
   function handleAddPlayer(event) {
     event.preventDefault();
     if (playerName) {
-      send('ADD_PLAYER', { playerName: playerName })
+      send('ADD_PLAYER', { playerName })
       setPlayerName("");
       event.target.reset();
       newPlayerTextBox.current.focus();
     }
   }
+
 
 
   console.log(state)
@@ -75,8 +48,11 @@ export default function ButtonsGame() {
           <input type="submit" value="Create New Player" />
         </label>
       </form>
-      <p>Round Number: 1</p>      
-      {machines.map(obj => <Button key={obj.playerID} machine={obj.machine}/> )}
+      <p>Round Number: {state.context.roundCount}</p>      
+      {/* {state.context.players.map(playerMachine => {
+        const playerName = playerMachine.context.playerName
+        return <Button key={playerName} machine={playerMachine}/> 
+      })} */}
     </div>
   );
 
