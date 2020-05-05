@@ -34,6 +34,7 @@ const buttonsGameMachine = Machine({
     round: {
       entry: 'incrementRoundCount',
       on: {
+        READY: 
         CHECK_ROUND_END: {
           target: 'resolution',
           cond: 'areAllButtonsComplete'
