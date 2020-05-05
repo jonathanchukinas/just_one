@@ -38,7 +38,16 @@ export default function ButtonsGame() {
 
 
 
-  console.log(state)
+  console.log('state', state)
+  console.log('context', state.context)
+  console.log('players1', state.context.players)
+
+
+  const players = state.context.players
+  console.log('players2', players)
+  const playerNames = Object.keys(players)
+  console.log('playerNames', playerNames)
+
 
   
   return (
@@ -52,10 +61,10 @@ export default function ButtonsGame() {
         </label>
       </form>
       <p>Round Number: {state.context.roundCount}</p>      
-      {/* {state.context.players.map(playerMachine => {
-        const playerName = playerMachine.context.playerName
-        return <Button key={playerName} machine={playerMachine}/> 
-      })} */}
+      {playerNames.map(playerName => {
+        const playerMachine = players[playerName];
+        return <Button key={playerName} machine={playerMachine} /> 
+      })}
     </div>
   );
 
