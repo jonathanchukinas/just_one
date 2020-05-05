@@ -1,4 +1,4 @@
-import buttonsGameMachine from './ButtonsGame.machine';
+import buttonsGameMachine from './machineGame';
 import { interpret } from 'xstate';
 
 

@@ -1,5 +1,5 @@
 import { Machine, assign, spawn } from 'xstate';
-import buttonMachine from './Button.machine';
+import { playerFactory } from './machinePlayer';
 
 
 const countPendingButtons = players => {
@@ -26,6 +26,7 @@ const buttonsGameMachine = Machine({
   },
   initial: 'idle',
   states: {
+    // TODO better name: registration?
     idle: {
       on: {
         START_GAME: 'round',

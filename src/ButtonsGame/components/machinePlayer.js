@@ -1,10 +1,9 @@
-import { Machine, sendParent } from 'xstate';
-import { assign } from 'xstate/lib/actionTypes';
+import { Machine, sendParent, assign } from 'xstate';
 
 
 const playerFactory = playerID => {
-  Machine({
-    id: 'player',
+  return Machine({
+    id: playerID,
     context: {
       playerID: playerID,
       playerName: undefined,
@@ -30,12 +29,12 @@ const playerFactory = playerID => {
     }
   },{
     actions: {
-      sendReady: sendParent('READY'),
-      sendNotReady: sendParent('NOT_READY'),
+      // TODO can these be abstracted?
+      sendReady: context => sendParent({ type: 'READY', playerID: context.playerID }),
+      sendNotReady: context => sendParent({ type: 'NOT_READY', playerID: context.playerID }),
       setPlayerName: assign({
-        playerName: (context, event) => event.playerName
-      })
-       
+        playerName: (_, event) => event.playerName
+      })       
     }
   });
 }

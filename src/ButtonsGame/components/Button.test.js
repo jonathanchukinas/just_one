@@ -1,4 +1,4 @@
-import buttonMachine from './Button.machine';
+import buttonMachine from './machinePlayer';
 
 
 const { initialState } = buttonMachine;

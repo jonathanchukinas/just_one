@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
-import buttonsGameMachine from './ButtonsGame.machine';
+import buttonsGameMachine from './machineGame';
 import { useMachine } from '@xstate/react';
 
 
