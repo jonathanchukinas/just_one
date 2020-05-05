@@ -9,14 +9,17 @@ export default function ButtonsGame() {
 
   // Buttons Game Machine
   const [state, send] = useMachine(buttonsGameMachine);
-  const initialPlayerNames = [
-    "Jonathan",
-    "Mike",
-    "Austin",
-  ]
-  // initialPlayerNames.forEach(playerName => {
-  //   send('ADD_PLAYER', { playerName })
-  // })
+  useEffect(() => {
+    const initialPlayerNames = [
+      "Jonathan",
+      "Mike",
+      "Austin",
+    ]
+    initialPlayerNames.forEach(playerName => {
+      send('ADD_PLAYER', { playerName })
+    })
+  }, [send])
+
 
   
   // Add Players
