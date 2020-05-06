@@ -2,7 +2,7 @@ import { Machine, assign, spawn } from 'xstate';
 import { playerFactory } from './machinePlayer';
 
 
-const countPendingButtons = players => {
+const countPendingButtons = playerRefs => {
   const reducer = (total, playerMachine) => {
     // console.log("about to check for pending", playerMachine.context.playerName, playerMachine)
     if (playerMachine.value === 'pending') {
@@ -11,18 +11,34 @@ const countPendingButtons = players => {
       return total
     }
   }
-  console.log('players', players)
-  const count = Object.values(players).reduce(reducer, 0)
+  console.log('players', playerRefs)
+  const count = Object.values(playerRefs).reduce(reducer, 0)
   console.log(count, count)
   return count
 }
+
+
+
+
+
+
+
+
+
+
 
 
 const buttonsGameMachine = Machine({
   id: 'game',
   context: {
     roundCount: 0,
-    players: {},
+    players: {
+      // Example:
+      // 1: {
+      //    actorRef: <actorRef>,
+      //    ready: true/false,
+      // }
+    },
   },
   initial: 'idle',
   states: {
@@ -33,58 +49,71 @@ const buttonsGameMachine = Machine({
       }
     },
     round: {
+      id: 'newRound',
       entry: 'incrementRoundCount',
-      on: {
-        READY: 
-        CHECK_ROUND_END: {
-          target: 'resolution',
-          cond: 'areAllButtonsComplete'
-        }
-      }
-    },
-    resolution: {
-      on: {
-        "": [
-          {
-            target: 'endGame',
-            cond: 'isEndGame'
-          },{
-            target: 'round'
-          },
-        ]
-      }
-    },
+      initial: 'playing',
+      states: {
+        playing: {
+          on: {
+            READY: {
+              target: 'checkingRoundEnd',
+              actions: 'updatePlayerReadiness',
+            }
+          }
+        },
+        checkingRoundEnd: {
+          on: {
+            "": [{
+              target: 'checkingGameEnd',
+              cond: 'areAllPlayersReady',
+            },{
+              target: 'playing',
+            }]
+          }
+        },
+        checkingGameEnd: {
+          on: {
+            "": [
+              {
+                target: '#game.endGame',
+                cond: 'isEndGame'
+              },{
+                target: '#newRound'
+              },
+            ]
+          }
+        },
+      },
+    },    
     endGame: {
       type: 'final',
     },
   },
   on: {
-    ADD_PLAYER: {
-      actions: 'addPlayer',
-    },
+    ADD_PLAYER: { actions: 'addPlayer' },
   }
 },{
   actions: {
     incrementRoundCount: assign({ roundCount: context => context.roundCount + 1 }),
     addPlayer: assign({
-      players: (context, event) => {
+      playerRefs: (context, event) => {
         const playerName = event.playerName
         const initialContext = { playerName }
-        const players = {
-          ...context.players,
+        const playerRefs = {
+          ...context.playerRefs,
           [playerName]: spawn(
             buttonMachine.withContext(initialContext),
             { sync: true }
           ),
         }
-        return players
+        return playerRefs
       }
     }),
   },
   guards: {
     areAllButtonsComplete: ctx => {
-      const players = ctx.players
-      if (countPendingButtons(players) == 0) {
+      const playerRefs = ctx.playerRefs
+      if (countPendingButtons(playerRefs) == 0) {
         console.log("All buttons are complete. Next round!")
         return true
       } else {
@@ -95,5 +124,13 @@ const buttonsGameMachine = Machine({
     isEndGame: context => (context.roundCount === context.finalRoundNum),
   }
 });
+
+
+
+
+
+
+
+
 
 export default buttonsGameMachine
