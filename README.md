@@ -150,3 +150,7 @@ In development, `pipenv install --dev` to install all, including those needed fo
     - CLient:
       - React
       - XState
+
+
+# GIST:
+https://xstate.js.org/viz/?gist=8c177ebcb2841cdbaef6eae6cb7973b0

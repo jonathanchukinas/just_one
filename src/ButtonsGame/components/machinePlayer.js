@@ -6,7 +6,7 @@ const playerFactory = playerID => {
     id: playerID,
     context: {
       playerID: playerID,
-      playerName: undefined,
+      playerName: 'Mary',
     },
     initial: 'pending',
     states: {
