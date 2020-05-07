@@ -1,3 +1,14 @@
+// TODO: write a working test
+// TODO: rename selfTest
+// TODO: guard allDone
+// TODO: guard pendingSelf
+// TODO: typescript
+// TODO: addPlayer
+
+
+import { Machine } from 'xstate';
+
+
 const getActivePlayers = ctx => {
   const players = ctx.status;
   const activePlayers = players.filter(player=>{
@@ -15,11 +26,11 @@ const guards = {
   },
   pendingSelf: ()=>{
     // if Self is disconnected, return false
-    return false
+    return true;
   },
 }
 
-const selfTest = Machine({
+const gameMachine = Machine({
   id: 'selfTest',
   initial: 'unknown',
   context: {
@@ -78,3 +89,6 @@ const selfTest = Machine({
 {
   guards,
 })
+
+
+export { gameMachine }
