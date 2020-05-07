@@ -17,6 +17,12 @@ describe('run an interpreted buttons game', () => {
   })
   
   test('Start game', () => {
+    service.send('ADD_PLAYER')
+    expect(service.state.context.players).toHaveProperty('player1')
+    console.log(service.state.context)
+  })
+
+  test('Start game', () => {
     service.send('START_GAME')
     expect(state.matches('idle')).toBe(true);
     expect(service.state.matches('round')).toBe(true);

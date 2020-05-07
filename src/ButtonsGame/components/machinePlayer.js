@@ -25,16 +25,16 @@ const playerFactory = playerID => {
     },
     on: {
       RESET: 'pending',
-      SET_PLAYER_NAME: 'setPlayerName',
+      // SET_PLAYER_NAME: 'setPlayerName',
     }
   },{
     actions: {
       // TODO can these be abstracted?
       sendReady: context => sendParent({ type: 'READY', playerID: context.playerID }),
       sendNotReady: context => sendParent({ type: 'NOT_READY', playerID: context.playerID }),
-      setPlayerName: assign({
-        playerName: (_, event) => event.playerName
-      })       
+      // setPlayerName: assign({
+      //   playerName: (_, event) => event.playerName
+      // })       
     }
   });
 }

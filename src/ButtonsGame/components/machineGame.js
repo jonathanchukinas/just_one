@@ -97,17 +97,16 @@ const buttonsGameMachine = Machine({
   actions: {
     incrementRoundCount: assign({ roundCount: context => context.roundCount + 1 }),
     addPlayer: assign({
-      playerRefs: (context, event) => {
-        const playerName = event.playerName
-        const initialContext = { playerName }
-        const playerRefs = {
-          ...context.playerRefs,
-          [playerName]: spawn(
-            buttonMachine.withContext(initialContext),
-            { sync: true }
-          ),
+      players: context => {
+        const existingPlayers = context.players;
+        const newPlayerID = `player${Object.keys(existingPlayers).length + 1}`;
+        const newPlayerService = spawn(playerFactory(newPlayerID))
+
+        const players = {
+          ...existingPlayers,
+          [newPlayerID]: newPlayerService
         }
-        return playerRefs
+        return players
       }
     }),
     updatePlayerReadiness: assign({
