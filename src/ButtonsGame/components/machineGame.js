@@ -64,27 +64,28 @@ const buttonsGameMachine = Machine({
         checkingRoundEnd: {
           on: {
             "": [{
-              target: 'checkingGameEnd',
+              target: '#checkingGameEnd',
               cond: 'areAllPlayersReady',
             },{
               target: 'playing',
             }]
           }
         },
-        checkingGameEnd: {
-          on: {
-            "": [
-              {
-                target: '#game.endGame',
-                cond: 'isEndGame'
-              },{
-                target: '#newRound'
-              },
-            ]
-          }
-        },
       },
-    },    
+    },
+    checkingGameEnd: {
+      id: 'checkingGameEnd',
+      on: {
+        "": [
+          {
+            target: '#game.endGame',
+            cond: 'isEndGame'
+          },{
+            target: '#newRound'
+          },
+        ]
+      }
+    },
     endGame: {
       type: 'final',
     },
@@ -109,6 +110,17 @@ const buttonsGameMachine = Machine({
         return playerRefs
       }
     }),
+    updatePlayerReadiness: assign({
+      players: (ctx, e) => {
+        const playerID = e.playerID;
+        const thisPlayer = ctx.players[playerID]
+        thisPlayer.ready = true
+        return {
+          ...ctx.players,
+          [playerID]: thisPlayer
+        }
+      }
+    })
   },
   guards: {
     areAllButtonsComplete: ctx => {
