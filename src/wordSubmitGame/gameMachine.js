@@ -3,6 +3,7 @@
 // TODO: guard pendingSelf
 // TODO: typescript
 // TODO: addPlayer
+// TODO: set context clues to undefined on start
 
 
 import { Machine, assign } from 'xstate';
@@ -33,15 +34,57 @@ const actions = {
 
 
 const guards = {
-  allDone: ()=>{
-    // TODO Ignores disconnected players
-    return false
+  allDone: ctx => {
+    const reducer = (areDone, playerID) => {
+      // TODO replace isPlayerPending with isPlayerReady?
+      const isPlayerReady = !isPlayerPending(ctx, playerID);
+      return areDone && isPlayerReady;
+    }
+    const playerIDs = Object.keys(ctx.status)
+    return playerIDs.reduce(reducer, true)
   },
-  pendingSelf: ()=>{
-    // TODO if Self is disconnected, return false
-    return true;
+  pendingSelf: ctx => {
+    const playerID = ctx.self;
+    return isPlayerPending(ctx, playerID);
   },
 }
+
+
+function isPlayerPending(ctx, playerID) {
+  return isPlayerActive(ctx, playerID) && !isClueSubmitted(ctx, playerID)
+}
+
+
+function isPlayerActive(ctx, playerID) {
+  if (ctx.status[playerID] === 'active') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+function isClueSubmitted(ctx, playerID) {
+  const clue = ctx.clues[playerID];
+  // TODO replace undefined with a null class
+  if (typeof clue === 'undefined') {
+    return false
+  } else {
+    return true
+  }
+}
+
+
+function areCluesDone(ctx, playerIDs) {
+  playerIDs.forEach(playerID => {
+    const clue = ctx.clues[playerID];
+    if (typeof clue === 'undefined') {
+      return false
+    }
+  })
+  return true
+}
+
 
 const gameMachine = Machine({
   id: 'game',
@@ -56,7 +99,7 @@ const gameMachine = Machine({
     status: {
       player1: 'active',
       player2: 'active',
-      player3: 'inactive',
+      player3: 'active',
     },
   },
   states: {

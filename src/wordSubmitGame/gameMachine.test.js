@@ -14,17 +14,17 @@ describe('run an interpreted buttons game', () => {
   })
 
   
-  test('submit other (player 2)', () => {
-    const event = {
-      type: 'SUBMIT',
-      playerID: 'player2',
-      clue: 'bananas'
-    }
-    const { playerID, clue } = event
-    service.send(event)
-    expect(service.state.context.clues[playerID]).toBe(clue);
-    expect(service.state.value).toBe('pendingSelf');
-  })
+  // test('submit other (player 2)', () => {
+  //   const event = {
+  //     type: 'SUBMIT',
+  //     playerID: 'player2',
+  //     clue: 'bananas'
+  //   }
+  //   const { playerID, clue } = event
+  //   service.send(event)
+  //   expect(service.state.context.clues[playerID]).toBe(clue);
+  //   expect(service.state.value).toBe('pendingSelf');
+  // })
   
   // test('submit self', () => {
   //   const event = {
@@ -32,8 +32,9 @@ describe('run an interpreted buttons game', () => {
   //     playerID: 'player1',
   //     clue: 'apples'
   //   } 
+  //   const { playerID, clue } = event
   //   service.send(event)
-  //   expect(service.state.context.clues[event.playerID]).toBe(event.clue);
+  //   expect(service.state.context.clues[playerID]).toBe(clue);
   //   expect(service.state.value).toBe('pendingOthers');
   // })
   
