@@ -1,12 +1,11 @@
-// TODO: write a working test
-// TODO: rename selfTest
+// TODO: addClue
 // TODO: guard allDone
 // TODO: guard pendingSelf
 // TODO: typescript
 // TODO: addPlayer
 
 
-import { Machine } from 'xstate';
+import { Machine, assign } from 'xstate';
 
 
 const getActivePlayers = ctx => {
@@ -19,19 +18,33 @@ const getActivePlayers = ctx => {
 }
 
 
+const actions = {
+  addClue: assign({
+    clues: (ctx, e) => {
+      const { clues } = ctx
+      const { clue, playerID } = e
+      return {
+        ...clues,
+        [playerID]: clue,
+      }
+    }
+  })
+}
+
+
 const guards = {
   allDone: ()=>{
-    // Ignores disconnected players
+    // TODO Ignores disconnected players
     return false
   },
   pendingSelf: ()=>{
-    // if Self is disconnected, return false
+    // TODO if Self is disconnected, return false
     return true;
   },
 }
 
 const gameMachine = Machine({
-  id: 'selfTest',
+  id: 'game',
   initial: 'unknown',
   context: {
     self: 'player1',
@@ -73,21 +86,22 @@ const gameMachine = Machine({
   },
   on: {
     SUBMIT: {
-      target: '#selfTest',
+      target: '#game',
       actions: 'addClue',
     },
     WITHDRAW: {
-      target: '#selfTest',
+      target: '#game',
       actions: 'deleteClue',
     },
     DISCONNECT: {
-      target: '#selfTest',
+      target: '#game',
       actions: 'markDisconnected',
     }
   }
 },
 {
   guards,
+  actions,
 })
 
 
