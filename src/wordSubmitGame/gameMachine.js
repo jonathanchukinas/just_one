@@ -36,22 +36,20 @@ const actions = {
 const guards = {
   allDone: ctx => {
     const reducer = (areDone, playerID) => {
-      // TODO replace isPlayerPending with isPlayerReady?
-      const isPlayerReady = !isPlayerPending(ctx, playerID);
-      return areDone && isPlayerReady;
+      return areDone && isPlayerReady(ctx, playerID)
     }
     const playerIDs = Object.keys(ctx.status)
     return playerIDs.reduce(reducer, true)
   },
   pendingSelf: ctx => {
     const playerID = ctx.self;
-    return isPlayerPending(ctx, playerID);
+    return !isPlayerReady(ctx, playerID);
   },
 }
 
 
-function isPlayerPending(ctx, playerID) {
-  return isPlayerActive(ctx, playerID) && !isClueSubmitted(ctx, playerID)
+function isPlayerReady(ctx, playerID) {
+  return isClueSubmitted(ctx, playerID) || !isPlayerActive(ctx, playerID)
 }
 
 
