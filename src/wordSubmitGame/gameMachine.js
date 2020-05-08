@@ -1,3 +1,8 @@
+// TODO: troubleshoot last test
+// TODO: replace preset players with ADD_PLAYER events
+// TODO: test WITHDRAW
+// TODO: test DISCONNECT
+// TODO: test RECONNECT
 // TODO: finish
 // TODO: typescript
 // TODO: addPlayer
@@ -11,17 +16,19 @@ import { Machine, assign } from 'xstate';
   ACTIONS
 **************************************/
 
-const actions = {
-  addClue: assign({
-    clues: (ctx, e) => {
-      const { clues } = ctx
-      const { clue, playerID } = e
-      return {
-        ...clues,
-        [playerID]: clue,
-      }
+const addClue = assign({
+  clues: (ctx, e) => {
+    const { clues } = ctx
+    const { clue, playerID } = e
+    return {
+      ...clues,
+      [playerID]: clue,
     }
-  })
+  }
+})
+
+const actions = {
+  addClue,
 }
 
 
