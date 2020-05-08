@@ -1,6 +1,4 @@
-// TODO: addClue
-// TODO: guard allDone
-// TODO: guard pendingSelf
+// TODO: finish
 // TODO: typescript
 // TODO: addPlayer
 // TODO: set context clues to undefined on start
@@ -9,15 +7,9 @@
 import { Machine, assign } from 'xstate';
 
 
-const getActivePlayers = ctx => {
-  const players = ctx.status;
-  const activePlayers = players.filter(player=>{
-    player === 'active'
-  })
-  const activePlayerNames = Object.keys(activePlayers)
-  return activePlayerNames
-}
-
+/**************************************
+  ACTIONS
+**************************************/
 
 const actions = {
   addClue: assign({
@@ -33,25 +25,26 @@ const actions = {
 }
 
 
-const guards = {
-  allDone: ctx => {
-    const reducer = (areDone, playerID) => {
-      return areDone && isPlayerReady(ctx, playerID)
-    }
-    const playerIDs = Object.keys(ctx.status)
-    return playerIDs.reduce(reducer, true)
-  },
-  pendingSelf: ctx => {
-    const playerID = ctx.self;
-    return !isPlayerReady(ctx, playerID);
-  },
+/**************************************
+  GUARDS
+**************************************/
+
+const allDone = ctx => {
+  const reducer = (areDone, playerID) => {
+    return areDone && isPlayerReady(ctx, playerID)
+  }
+  const playerIDs = Object.keys(ctx.status)
+  return playerIDs.reduce(reducer, true)
 }
 
+const pendingSelf = ctx => {
+  const playerID = ctx.self;
+  return !isPlayerReady(ctx, playerID);
+}
 
 function isPlayerReady(ctx, playerID) {
   return isClueSubmitted(ctx, playerID) || !isPlayerActive(ctx, playerID)
 }
-
 
 function isPlayerActive(ctx, playerID) {
   if (ctx.status[playerID] === 'active') {
@@ -60,7 +53,6 @@ function isPlayerActive(ctx, playerID) {
     return false;
   }
 }
-
 
 function isClueSubmitted(ctx, playerID) {
   const clue = ctx.clues[playerID];
@@ -72,17 +64,15 @@ function isClueSubmitted(ctx, playerID) {
   }
 }
 
-
-function areCluesDone(ctx, playerIDs) {
-  playerIDs.forEach(playerID => {
-    const clue = ctx.clues[playerID];
-    if (typeof clue === 'undefined') {
-      return false
-    }
-  })
-  return true
+const guards = {
+  allDone,
+  pendingSelf,
 }
 
+
+/**************************************
+  MACHINE
+**************************************/
 
 const gameMachine = Machine({
   id: 'game',
