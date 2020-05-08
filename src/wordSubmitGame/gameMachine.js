@@ -1,4 +1,3 @@
-// TODO: troubleshoot last test
 // TODO: replace preset players with ADD_PLAYER events
 // TODO: test WITHDRAW
 // TODO: test DISCONNECT

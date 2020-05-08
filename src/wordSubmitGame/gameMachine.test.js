@@ -44,10 +44,10 @@ describe('run an interpreted buttons game', () => {
       playerID: 'player3',
       clue: 'oranges'
     } 
-    service.send(event)
+    const finalState = service.send(event)
     expect(service.state.context.clues[event.playerID]).toBe(event.clue);
     expect(service.state.value).toBe('done');
-    // expect(service.done).toBeTruthy();
+    expect(finalState.done).toBeTruthy();
   })
 
  
