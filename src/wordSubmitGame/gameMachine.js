@@ -1,4 +1,3 @@
-// TODO: replace preset players with ADD_PLAYER events
 // TODO: test WITHDRAW
 // TODO: test DISCONNECT
 // TODO: test RECONNECT
@@ -26,8 +25,21 @@ const addClue = assign({
   }
 })
 
+const addPlayer = assign({
+  status: (ctx, e) => {
+    const { status } = ctx;
+    const playerCount = Object.keys(status).length;
+    const playerID = `player${playerCount+1}`
+    return {
+      ...status,
+      [playerID]: 'active'
+    }
+  }
+})
+
 const actions = {
   addClue,
+  addPlayer,
 }
 
 
@@ -122,6 +134,9 @@ const gameMachine = Machine({
     pendingOthers: {},
   },
   on: {
+    ADD_PLAYER: {
+      actions: 'addPlayer',
+    },
     SUBMIT: {
       target: '#game',
       actions: 'addClue',

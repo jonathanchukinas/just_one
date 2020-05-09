@@ -37,6 +37,11 @@ describe('run an interpreted buttons game', () => {
     expect(service.state.context.clues[playerID]).toBe(clue);
     expect(service.state.value).toBe('pendingOthers');
   })
+    
+  test('create new player', () => {
+    const state = service.send('ADD_PLAYER')
+    expect(state.context.status.player4).toBe('active')
+  })
   
   test('submit other (player 3)', () => {
     const event = {
@@ -44,10 +49,9 @@ describe('run an interpreted buttons game', () => {
       playerID: 'player3',
       clue: 'oranges'
     } 
-    const finalState = service.send(event)
+    const state = service.send(event)
     expect(service.state.context.clues[event.playerID]).toBe(event.clue);
-    expect(service.state.value).toBe('done');
-    expect(finalState.done).toBeTruthy();
+    expect(service.state.value).toBe('pendingOthers');
   })
 
  
