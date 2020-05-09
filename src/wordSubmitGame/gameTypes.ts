@@ -41,31 +41,39 @@ interface GameSchema {
   EVENT
 **************************************/
 
-interface PlayerName {
-  type: 'PLAYER_NAME';
+type E_NamePlayer = {
+  type: 'NAME_PLAYER';
   playerID: PlayerID;
   playerName: string;
 }
 
+type E_AddPlayer = {
+  type: 'PLAYER_ADD';
+  playerID?: PlayerID;
+}
+
+type E_SubmitClue = {
+  type: 'SUBMIT_CLUE';
+  playerID: PlayerID;
+  value: string;
+}
+
+type E_WithdrawClue = {
+  type: 'WITHDRAW_CLUE';
+  playerID: PlayerID;
+}
+
+type E_Disconnect = {
+  type: 'DISCONNECT';
+  playerID: PlayerID;
+}
+
 type GameEvent = 
-  {
-    type: 'PLAYER_ADD';
-    playerID?: PlayerID;
-  }
-  | PlayerName
-  | {
-    type: 'CLUE_SUBMIT';
-    playerID: PlayerID;
-    value: string;
-  }
-  | {
-    type: 'CLUE_WITHDRAW';
-    playerID: PlayerID;
-  }
-  | {
-    type: 'DISCONNECT';
-    playerID: PlayerID;
-  }
+  | E_AddPlayer
+  | E_NamePlayer
+  | E_SubmitClue
+  | E_WithdrawClue
+  | E_Disconnect
 
 /**************************************
   export
@@ -75,4 +83,9 @@ export type {
   GameContext,
   GameSchema,
   GameEvent,
+  E_AddPlayer,
+  E_NamePlayer,
+  E_SubmitClue,
+  E_WithdrawClue,
+  E_Disconnect,
 }
