@@ -1,26 +1,26 @@
 export type NamePlayer = {
   type: 'NAME_PLAYER';
-  playerIndex: number;
+  playerID: number;
   playerName: string;
 }
 
 export type AddPlayer = {
   type: 'PLAYER_ADD';
-  playerIndex?: number;
+  playerID?: number;
 }
 
 export type SubmitClue = {
   type: 'SUBMIT_CLUE';
-  playerIndex: number;
+  playerID: number;
   clue: string;
 }
 
 export type WithdrawClue = {
   type: 'WITHDRAW_CLUE';
-  playerIndex: number;
+  playerID: number;
 }
 
 export type Disconnect = {
   type: 'DISCONNECT';
-  playerIndex: number;
+  playerID: number;
 }

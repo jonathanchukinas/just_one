@@ -45,18 +45,14 @@ const addClue = assign({
 const addPlayer = assign({
   players: (ctx: GameContext, e) => {
     const { players } = ctx;
-    let { playerIndex } = <E.AddPlayer>e;
-    if (!playerIndex) { playerIndex = Object.keys(players).length }
-    const player: Player = {
+    let { playerID } = <E.AddPlayer>e;
+    if (!playerID) { playerID = players.size };
+    players.set(playerID, {
       connection: ConnectionStatus.Active,
-      index: playerIndex,
-      clues: {}
-    }
-    players[playerIndex] = 
-    return {
-      ...players,
-      [PlayerIndex]: player
-    }
+      id: playerID,
+      clues: new Map(),
+    });
+    return players
   }
 })
 
@@ -140,7 +136,7 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   context: {
     self: 1,
     turnNumber: 1,
-    players: {},
+    players: new Map(),
   },
   states: {
     unknown: {
