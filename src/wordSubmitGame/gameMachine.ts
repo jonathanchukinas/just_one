@@ -1,6 +1,6 @@
 // TODO: build machine Factory that accepts player 
 // TODO: move types/interfaces to new file
-// TODO: test CLUE_WITHDRAW
+// TODO: test CLUE.WITHDRAW
 // TODO: test DISCONNECT
 // TODO: test RECONNECT
 // TODO: finish
@@ -13,7 +13,13 @@ import type {
   GameContext,
   GameSchema,
   GameEvent,
+  Player,
+  PlayerIndex,
 } from './gameTypes'
+import {
+  ConnectionStatus,  
+} from './gameTypes'
+import type * as E from './events'
 
 
 
@@ -26,49 +32,48 @@ function getTurnNumber(): number {
 }
 
 const addClue = assign({
-  players: (context, e) => {
-    const { players } = <GameContext>context;
-    const { playerID, value: clue } = <GameEvent>e;
-    const player = players[playerID];
+  players: (ctx: GameContext, e) => {
+    const { players } = ctx;
+    const { playerIndex, clue } = <E.SubmitClue>e;
+    const player = players[playerIndex];
     player.clues[getTurnNumber()] = clue;
-    return {
-      ...players,
-      [playerID]: player,
-    }
+    players[playerIndex] = player
+    return players
   }
 })
 
 const addPlayer = assign({
-  players: (ctx, e: GameEvent) => {
-    const { players } = <GameContext>ctx;
-    let { playerID } = e;
-    // TODO can this be replaced by an `||`?
-    playerID = playerID ? playerID : Object.keys(players).length + 1;
+  players: (ctx: GameContext, e) => {
+    const { players } = ctx;
+    let { playerIndex } = <E.AddPlayer>e;
+    if (!playerIndex) { playerIndex = Object.keys(players).length }
     const player: Player = {
       connection: ConnectionStatus.Active,
-      id: playerID,
+      index: playerIndex,
       clues: {}
     }
+    players[playerIndex] = 
     return {
       ...players,
-      [playerID]: player
+      [PlayerIndex]: player
     }
   }
 })
 
 const namePlayer = assign({
-  players: (ctx, e: GameEvent) => {
-    const { players } = <GameContext>ctx;
-    let { playerID, value } = e;
-    playerID = playerID ? playerID : Object.keys(players).length + 1;
+  players: (ctx: GameContext, e) => {
+    const { players } = ctx;
+    let { PlayerIndex, playerName } = <E.NamePlayer>e;
+    PlayerIndex = PlayerIndex ? PlayerIndex : Object.keys(players).length + 1;
     const player: Player = {
       connection: ConnectionStatus.Active,
-      id: playerID,
-      clues: {}
+      index: PlayerIndex,
+      clues: {},
+      name: playerName,
     }
     return {
       ...players,
-      [playerID]: player
+      [PlayerIndex]: player
     }
   }
 })
@@ -76,7 +81,7 @@ const namePlayer = assign({
 const actions = {
   addClue,
   addPlayer,
-  // namePlayer,
+  namePlayer,
 }
 
 
@@ -84,33 +89,33 @@ const actions = {
   GUARDS
 **************************************/
 
-const allDone = ctx => {
-  const reducer = (areDone, playerID) => {
-    return areDone && isPlayerReady(ctx, playerID)
+const allDone = (ctx: GameContext) => {
+  function reducer(areDone: boolean, id: PlayerIndex): boolean {
+    return areDone && isPlayerReady(ctx, id)
   }
-  const playerIDs = Object.keys(ctx.status)
-  return playerIDs.reduce(reducer, true)
+  const PlayerIndexs: PlayerIndex[] = Object.keys(ctx.players)
+  return PlayerIndexs.reduce(reducer, true)
 }
 
-const pendingSelf = ctx => {
-  const playerID = ctx.self;
-  return !isPlayerReady(ctx, playerID);
+const pendingSelf = (ctx: GameContext) => {
+  const PlayerIndex = ctx.self;
+  return !isPlayerReady(ctx, PlayerIndex);
 }
 
-function isPlayerReady(ctx, playerID) {
-  return isClueSubmitted(ctx, playerID) || !isPlayerActive(ctx, playerID)
+function isPlayerReady(ctx: GameContext, id: PlayerIndex) {
+  return isClueSubmitted(ctx, id) || !isPlayerActive(ctx, id)
 }
 
-function isPlayerActive(ctx, playerID) {
-  if (ctx.status[playerID] === 'active') {
+function isPlayerActive(ctx: GameContext, id: PlayerIndex) {
+  if (ctx.status[id] === 'active') {
     return true;
   } else {
     return false;
   }
 }
 
-function isClueSubmitted(ctx, playerID) {
-  const clue = ctx.clues[playerID];
+function isClueSubmitted(ctx, PlayerIndex) {
+  const clue = ctx.clues[PlayerIndex];
   // TODO replace undefined with a null class
   if (typeof clue === 'undefined') {
     return false
@@ -168,11 +173,11 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
     PLAYER_NAME: {
       actions: 'namePlayer',
     },
-    CLUE_SUBMIT: {
+    CLUE.SUBMIT: {
       target: '#game',
       actions: 'addClue',
     },
-    CLUE_WITHDRAW: {
+    CLUE.WITHDRAW: {
       target: '#game',
       actions: 'deleteClue',
     },

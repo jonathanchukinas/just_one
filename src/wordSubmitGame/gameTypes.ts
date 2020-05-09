@@ -9,18 +9,20 @@ enum ConnectionStatus {
   Disconnected,
 }
 
-type PlayerID = number;
+// TODO: I want this to be a number, but number keys get converted to strings. What to do?
+// IDs start at zero.
+type PlayerIndex = number;
 
 interface Player {
   connection: ConnectionStatus;
-  id: PlayerID;
+  index: PlayerIndex;
   name?: string;
   clues: { [turnNumber: number]: string }
 }
 
 interface GameContext {
-  self?: PlayerID;
-  players: { [playerID: number]: Player};
+  self: PlayerIndex;
+  players: Player[];
   turnNumber: number;
 }
 
@@ -41,39 +43,14 @@ interface GameSchema {
   EVENT
 **************************************/
 
-type E_NamePlayer = {
-  type: 'NAME_PLAYER';
-  playerID: PlayerID;
-  playerName: string;
-}
-
-type E_AddPlayer = {
-  type: 'PLAYER_ADD';
-  playerID?: PlayerID;
-}
-
-type E_SubmitClue = {
-  type: 'SUBMIT_CLUE';
-  playerID: PlayerID;
-  value: string;
-}
-
-type E_WithdrawClue = {
-  type: 'WITHDRAW_CLUE';
-  playerID: PlayerID;
-}
-
-type E_Disconnect = {
-  type: 'DISCONNECT';
-  playerID: PlayerID;
-}
+import * as E from './events'
 
 type GameEvent = 
-  | E_AddPlayer
-  | E_NamePlayer
-  | E_SubmitClue
-  | E_WithdrawClue
-  | E_Disconnect
+  | E.AddPlayer
+  | E.NamePlayer
+  | E.SubmitClue
+  | E.WithdrawClue
+  | E.Disconnect
 
 /**************************************
   export
@@ -83,9 +60,10 @@ export type {
   GameContext,
   GameSchema,
   GameEvent,
-  E_AddPlayer,
-  E_NamePlayer,
-  E_SubmitClue,
-  E_WithdrawClue,
-  E_Disconnect,
+  Player,
+  PlayerIndex,
+}
+
+export {
+  ConnectionStatus,  
 }
