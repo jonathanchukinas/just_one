@@ -12,7 +12,11 @@ describe('run an interpreted buttons game', () => {
   test('Check initial state', () => {
     expect(service.state.value).toBe('pendingSelf');
   })
-
+    
+  test('create players', () => {
+    const state = service.send('ADD_PLAYER')
+    expect(state.context.status.player4).toBe('active')
+  })
   
   test('submit other (player 2)', () => {
     const event = {
@@ -36,11 +40,6 @@ describe('run an interpreted buttons game', () => {
     service.send(event)
     expect(service.state.context.clues[playerID]).toBe(clue);
     expect(service.state.value).toBe('pendingOthers');
-  })
-    
-  test('create new player', () => {
-    const state = service.send('ADD_PLAYER')
-    expect(state.context.status.player4).toBe('active')
   })
   
   test('submit other (player 3)', () => {

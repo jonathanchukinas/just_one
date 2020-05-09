@@ -1,38 +1,74 @@
-// TODO: test WITHDRAW
+// TODO: build machine Factory that accepts player 
+// TODO: move types/interfaces to new file
+// TODO: test CLUE_WITHDRAW
 // TODO: test DISCONNECT
 // TODO: test RECONNECT
 // TODO: finish
 // TODO: typescript
-// TODO: addPlayer
 // TODO: set context clues to undefined on start
 
 
 import { Machine, assign } from 'xstate';
+import type {
+  GameContext,
+  GameSchema,
+  GameEvent,
+} from './gameTypes'
+
 
 
 /**************************************
   ACTIONS
 **************************************/
 
+function getTurnNumber(): number {
+  return 1
+}
+
 const addClue = assign({
-  clues: (ctx, e) => {
-    const { clues } = ctx
-    const { clue, playerID } = e
+  players: (context, e) => {
+    const { players } = <GameContext>context;
+    const { playerID, value: clue } = <GameEvent>e;
+    const player = players[playerID];
+    player.clues[getTurnNumber()] = clue;
     return {
-      ...clues,
-      [playerID]: clue,
+      ...players,
+      [playerID]: player,
     }
   }
 })
 
 const addPlayer = assign({
-  status: (ctx, e) => {
-    const { status } = ctx;
-    const playerCount = Object.keys(status).length;
-    const playerID = `player${playerCount+1}`
+  players: (ctx, e: GameEvent) => {
+    const { players } = <GameContext>ctx;
+    let { playerID } = e;
+    // TODO can this be replaced by an `||`?
+    playerID = playerID ? playerID : Object.keys(players).length + 1;
+    const player: Player = {
+      connection: ConnectionStatus.Active,
+      id: playerID,
+      clues: {}
+    }
     return {
-      ...status,
-      [playerID]: 'active'
+      ...players,
+      [playerID]: player
+    }
+  }
+})
+
+const namePlayer = assign({
+  players: (ctx, e: GameEvent) => {
+    const { players } = <GameContext>ctx;
+    let { playerID, value } = e;
+    playerID = playerID ? playerID : Object.keys(players).length + 1;
+    const player: Player = {
+      connection: ConnectionStatus.Active,
+      id: playerID,
+      clues: {}
+    }
+    return {
+      ...players,
+      [playerID]: player
     }
   }
 })
@@ -40,6 +76,7 @@ const addPlayer = assign({
 const actions = {
   addClue,
   addPlayer,
+  // namePlayer,
 }
 
 
@@ -92,21 +129,13 @@ const guards = {
   MACHINE
 **************************************/
 
-const gameMachine = Machine({
+const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   id: 'game',
   initial: 'unknown',
   context: {
-    self: 'player1',
-    clues: {
-      player1: undefined,
-      player2: undefined,
-      player3: undefined,
-    },
-    status: {
-      player1: 'active',
-      player2: 'active',
-      player3: 'active',
-    },
+    self: 1,
+    turnNumber: 1,
+    players: {},
   },
   states: {
     unknown: {
@@ -122,26 +151,28 @@ const gameMachine = Machine({
           },
           {
             target: 'pendingOthers',
-            target: 'pendingOthers',
           },
         ],
       },
     },
-    done: {
+    complete: {
       type: 'final',
     },
     pendingSelf: {},
     pendingOthers: {},
   },
   on: {
-    ADD_PLAYER: {
+    PLAYER_ADD: {
       actions: 'addPlayer',
     },
-    SUBMIT: {
+    PLAYER_NAME: {
+      actions: 'namePlayer',
+    },
+    CLUE_SUBMIT: {
       target: '#game',
       actions: 'addClue',
     },
-    WITHDRAW: {
+    CLUE_WITHDRAW: {
       target: '#game',
       actions: 'deleteClue',
     },
