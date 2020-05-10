@@ -1,4 +1,7 @@
-
+import type {
+  PlayerID,
+  TurnNum,
+} from './simpleTypes'
 
 /**************************************
   CONTEXT
@@ -8,11 +11,6 @@ export enum ConnectionStatus {
   Active,
   Disconnected,
 }
-
-// TODO: I want this to be a number, but number keys get converted to strings. What to do?
-// IDs start at zero.
-export type PlayerID = number;
-export type TurnNum = number
 
 export interface Player {
   connection: ConnectionStatus;
