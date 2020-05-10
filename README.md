@@ -130,6 +130,7 @@ In development, `pipenv install --dev` to install all, including those needed fo
 - manifect.json?
 - favicon
 - collect all ui files into a new dir at same level as api
+- prettier: (https://www.sitepoint.com/react-with-typescript-best-practices/)
 
 
 # Staged Approached:

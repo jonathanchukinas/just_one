@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
 import { useMachine } from '@xstate/react';
 import { gameMachine } from './gameMachine';
-// import type {
-//   GameContext,
-//   GameSchema,
-//   GameEvent,
-//   Player,
-// } from './gameTypes'
+import type {
+  Player,
+} from './gameTypes'
 // import type {
 //   TurnNum,
 // } from './simpleTypes'
@@ -14,7 +11,7 @@ import {
   isSelf,
   renderName,
 } from './gameTypes'
-// import type * as E from './events'
+import type * as E from './events'
 
 
 
@@ -23,9 +20,7 @@ export default function WordSubmitGame() {
   const [state, send] = useMachine(gameMachine)
 
   useEffect(()=>{
-    // TODO add TS back in
-    // const events: Array<E.AddPlayer|E.NamePlayer> = [
-    const events = [
+    const events: Array<E.AddPlayer|E.NamePlayer|E.SetSelf> = [
       { type: 'ADD_PLAYER', playerID: 1 },
       { type: 'ADD_PLAYER' },
       { type: 'ADD_PLAYER' },
@@ -36,10 +31,7 @@ export default function WordSubmitGame() {
     send(events)
   }, [send])
 
-  // TODO TS for JSX element?
-  // TODO add TS back in
-  // function getListItem(player: Player) {
-  function getListItem(player) {
+  function getListItem(player: Player) {
     // Render Name
     let name = renderName(player)
     if (isSelf(state.context, player)) { name += ' (self)' }
@@ -52,7 +44,6 @@ export default function WordSubmitGame() {
     const text = `${name}: ${clue}`
     return <li key={ player.id } >{ text }</li>
   }
-
 
   return <ul>
     { Array.from(state.context.players.values()).map(player => getListItem(player)) }
