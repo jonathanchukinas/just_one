@@ -2,13 +2,13 @@
   CONTEXT
 **************************************/
 
-export type Context {}
+export type Context = {}
 
 /**************************************
  MACHINE
  **************************************/
 
-export type States {
+export type States = {
   states: {
     off: {},
     on: {},

@@ -27,15 +27,17 @@ function randFloat(min: number, max: number): number {
 }
 
 const delays = {
-  RANDOM_DELAY: () => randFloat(0.5, 2.0),
+  // RANDOM_DELAY: () => randFloat(0.5, 2.0),
+  RANDOM_DELAY: () => 1000,
 }
 
 
 /**************************************
   MACHINE
 **************************************/
-
-export const gameMachine = Machine<T.Context, T.States, T.Event>({
+// TODO
+// export const machine = Machine<T.Context, T.States, T.Event>({
+export const machine = Machine({
   id: 'game',
   initial: 'off',
   states: {
@@ -43,19 +45,19 @@ export const gameMachine = Machine<T.Context, T.States, T.Event>({
       on: {
         TOGGLE: 'on'
       },
-      after: {
+      after: [{
         delay: 'RANDOM_DELAY',
-        target: 'on'
-      }
+        target: 'on',
+      }]
     },
     on: {
       on: {
         TOGGLE: 'off'
       },
-      after: {
+      after: [{
         delay: 'RANDOM_DELAY',
         target: 'on'
-      }
+      }]
     },
   },
 },
