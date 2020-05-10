@@ -34,10 +34,9 @@ function getTurnNumber(): number {
 const addClue = assign({
   players: (ctx: GameContext, e) => {
     const { players } = ctx;
-    const { playerIndex, clue } = <E.SubmitClue>e;
-    const player = players[playerIndex];
-    player.clues[getTurnNumber()] = clue;
-    players[playerIndex] = player
+    const { playerID, clue } = <E.SubmitClue>e;
+    const turnNum = getTurnNumber();
+    players.get(playerID)?.clues.set(turnNum, clue)
     return players
   }
 })
