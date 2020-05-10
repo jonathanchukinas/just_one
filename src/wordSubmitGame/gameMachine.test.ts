@@ -51,16 +51,26 @@ describe('word game', () => {
     expect(clues.get(2)).toBe(clue);
   })
   
-  test('submit other (player 3)', () => {
-    const event = {
-      type: 'SUBMIT',
-      playerID: 'player3',
-      clue: 'oranges'
-    } 
+  test('SET_SELF', () => {
+    const event: E.SetSelf = {
+      type: 'SET_SELF',
+      playerID: 1,
+    }
     const state = service.send(event)
-    expect(service.state.context.clues[event.playerID]).toBe(event.clue);
-    expect(service.state.value).toBe('pendingOthers');
+    const self = <Player>state.context.self
+    expect(self.name).toBe('Jonathan');
   })
+ 
+  // test('submit other (player 3)', () => {
+  //   const event = {
+  //     type: 'SUBMIT',
+  //     playerID: 'player3',
+  //     clue: 'oranges'
+  //   };
+  //   const state = service.send(event);
+  //   expect(service.state.context.clues[event.playerID]).toBe(event.clue);
+  //   expect(service.state.value).toBe('pendingOthers');
+  // })
 
  
   // test('Add player', () => {
