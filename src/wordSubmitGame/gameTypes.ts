@@ -4,23 +4,32 @@
   CONTEXT
 **************************************/
 
-enum ConnectionStatus {
+export enum ConnectionStatus {
   Active,
   Disconnected,
 }
 
-type PlayerID = number;
+// TODO: I want this to be a number, but number keys get converted to strings. What to do?
+// IDs start at zero.
+export type PlayerID = number;
+export type TurnNum = number
 
-interface Player {
+export interface Player {
   connection: ConnectionStatus;
   id: PlayerID;
   name?: string;
-  clues: { [turnNumber: number]: string }
+  clues: Map<TurnNum, string>;
 }
 
-interface GameContext {
-  self?: PlayerID;
-  players: { [playerID: number]: Player};
+export interface NoPlayer {
+  id: null
+}
+
+export type Players = Map<PlayerID, Player>;
+
+export interface GameContext {
+  self: NoPlayer | Player;
+  players: Players;
   turnNumber: number;
 }
 
@@ -28,8 +37,9 @@ interface GameContext {
   MACHINE
 **************************************/
 
-interface GameSchema {
+export interface GameSchema {
   states: {
+    noPlayers: {},
     unknown: {},
     pendingSelf: {},
     pendingOthers: {},
@@ -41,51 +51,24 @@ interface GameSchema {
   EVENT
 **************************************/
 
-type E_NamePlayer = {
-  type: 'NAME_PLAYER';
-  playerID: PlayerID;
-  playerName: string;
-}
+import * as E from './events'
 
-type E_AddPlayer = {
-  type: 'PLAYER_ADD';
-  playerID?: PlayerID;
-}
-
-type E_SubmitClue = {
-  type: 'SUBMIT_CLUE';
-  playerID: PlayerID;
-  value: string;
-}
-
-type E_WithdrawClue = {
-  type: 'WITHDRAW_CLUE';
-  playerID: PlayerID;
-}
-
-type E_Disconnect = {
-  type: 'DISCONNECT';
-  playerID: PlayerID;
-}
-
-type GameEvent = 
-  | E_AddPlayer
-  | E_NamePlayer
-  | E_SubmitClue
-  | E_WithdrawClue
-  | E_Disconnect
+export type GameEvent = 
+  | E.AddPlayer
+  | E.NamePlayer
+  | E.SubmitClue
+  | E.WithdrawClue
+  // | E.Disconnect
 
 /**************************************
-  export
+  functions
 **************************************/
 
-export type {
-  GameContext,
-  GameSchema,
-  GameEvent,
-  E_AddPlayer,
-  E_NamePlayer,
-  E_SubmitClue,
-  E_WithdrawClue,
-  E_Disconnect,
+export function getPlayer(players: Players, id: PlayerID): Player {
+  const player = players.get(id)
+  if (player) {
+    return player
+  } else {
+    throw(`Player${id} hasn't been created yet!`)
+  }
 }
