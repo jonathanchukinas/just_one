@@ -22,19 +22,19 @@ export default function WordSubmitGame() {
 
   const [state, send] = useMachine(gameMachine)
 
-  // TODO add TS back in
-  // const events: Array<E.AddPlayer|E.NamePlayer> = [
-  const events = [
-    { type: 'ADD_PLAYER', playerID: 1 },
-    { type: 'ADD_PLAYER' },
-    { type: 'ADD_PLAYER' },
-    { type: 'NAME_PLAYER', playerID: 1, playerName: 'Jonathan' },
-    { type: 'NAME_PLAYER', playerID: 3, playerName: 'Nicholas' },
-    { type: 'SET_SELF', playerID: 1 },
-  ]
   useEffect(()=>{
+    // TODO add TS back in
+    // const events: Array<E.AddPlayer|E.NamePlayer> = [
+    const events = [
+      { type: 'ADD_PLAYER', playerID: 1 },
+      { type: 'ADD_PLAYER' },
+      { type: 'ADD_PLAYER' },
+      { type: 'NAME_PLAYER', playerID: 1, playerName: 'Jonathan' },
+      { type: 'NAME_PLAYER', playerID: 3, playerName: 'Nicholas' },
+      { type: 'SET_SELF', playerID: 1 },
+    ]
     send(events)
-  }, [])
+  }, [send])
 
   // TODO TS for JSX element?
   // TODO add TS back in
