@@ -130,6 +130,7 @@ In development, `pipenv install --dev` to install all, including those needed fo
 - manifect.json?
 - favicon
 - collect all ui files into a new dir at same level as api
+- prettier: (https://www.sitepoint.com/react-with-typescript-best-practices/)
 
 
 # Staged Approached:
@@ -151,6 +152,9 @@ In development, `pipenv install --dev` to install all, including those needed fo
       - React
       - XState
 
-
 # GIST:
 https://xstate.js.org/viz/?gist=8c177ebcb2841cdbaef6eae6cb7973b0
+
+
+# Conventions
+- use `event` variable name for an event you're constructing with a mind to send to a machine. Use `e` as the function argument name in e.g. guard and action functions.
