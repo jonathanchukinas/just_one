@@ -16,6 +16,7 @@ import type {
   Player,
   Players,
   PlayerID,
+  TurnNum,
 } from './gameTypes'
 import {
   ConnectionStatus,  
@@ -42,7 +43,7 @@ function getPlayer(players: Players, id: PlayerID): Player {
   ACTIONS
 **************************************/
 
-function getTurnNumber(): number {
+function getTurnNumber(): TurnNum {
   return 1
 }
 
@@ -90,42 +91,34 @@ const actions = {
   GUARDS
 **************************************/
 
-const allDone = (ctx: GameContext) => {
-  function reducer(areDone: boolean, id: PlayerID): boolean {
-    return areDone && isPlayerReady(ctx, id)
+const isCluePhaseComplete = (ctx: GameContext) => {
+  for (const player of ctx.players.values()) {
+    if (!isReady(player)) { return false }
   }
-  const PlayerIndexs: PlayerID[] = Object.keys(ctx.players)
-  return PlayerIndexs.reduce(reducer, true)
+  return true
 }
 
-const pendingSelf = (ctx: GameContext) => {
-  const PlayerIndex = ctx.self;
-  return !isPlayerReady(ctx, PlayerIndex);
+const amIHoldingUpCluePhase = (ctx: GameContext) => {
+  const id: PlayerID = ctx.self;
+  const player = getPlayer(ctx.players, id)
+  return !isReady(player);
 }
 
-function isPlayerReady(ctx: GameContext, id: PlayerID) {
-  return isClueSubmitted(ctx, id) || !isPlayerActive(ctx, id)
+function isReady(player: Player) {
+  return hasClue(player, getTurnNumber()) || !isActive(player)
 }
 
-function isPlayerActive(ctx: GameContext, id: PlayerID) {
-  const player = ctx.players.get(id)
-  if (!player) { throw(`Player hasn't been created yet!`)}
+function isActive(player: Player): boolean {
   return (player.connection === ConnectionStatus.Active)
 }
 
-function isClueSubmitted(ctx, PlayerIndex) {
-  const clue = ctx.clues[PlayerIndex];
-  // TODO replace undefined with a null class
-  if (typeof clue === 'undefined') {
-    return false
-  } else {
-    return true
-  }
+function hasClue(player: Player, turnNum: TurnNum): boolean {
+  return player.clues.has(turnNum)
 }
 
 const guards = {
-  allDone,
-  pendingSelf,
+  allDone: isCluePhaseComplete,
+  pendingSelf: amIHoldingUpCluePhase,
 }
 
 

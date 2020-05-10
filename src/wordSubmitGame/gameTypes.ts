@@ -21,9 +21,11 @@ interface Player {
   clues: Map<TurnNum, string>;
 }
 
+type Players = Map<PlayerID, Player>;
+
 interface GameContext {
   self: PlayerID;
-  players: Map<PlayerID, Player>;
+  players: Players;
   turnNumber: number;
 }
 
@@ -62,7 +64,9 @@ export type {
   GameSchema,
   GameEvent,
   Player,
+  Players,
   PlayerID,
+  TurnNum,
 }
 
 export {
