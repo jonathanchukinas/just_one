@@ -6,10 +6,11 @@ import type {
   GameEvent,
   Player,
   Players,
-  PlayerID,
-  TurnNum,
 } from './gameTypes';
-import { getPlayer } from './gameTypes';
+import {
+  getPlayer,
+  getClues,
+} from './gameTypes';
 import type * as E from './events';
 
 
@@ -23,7 +24,7 @@ describe('word game', () => {
     expect(service.state.value).toBe('noPlayers');
   })
     
-  test('create players', () => {
+  test('ADD/NAME_PLAYER', () => {
     const events: Array<E.AddPlayer|E.NamePlayer> = [
       { type: 'ADD_PLAYER', playerID: 1 },
       { type: 'ADD_PLAYER' },
@@ -36,7 +37,7 @@ describe('word game', () => {
     expect(nicholas.name).toBe('Nicholas')
   })
   
-  test('submit other (player 2)', () => {
+  test('SUBMIT_CLUE (Player2)', () => {
     const event: E.SubmitClue = {
       type: 'SUBMIT_CLUE',
       playerID: 2,
@@ -44,9 +45,10 @@ describe('word game', () => {
     }
     const { playerID, clue } = event
     const state = service.send(event)
-    const player = getPlayer(state.context.players, playerID)
-    expect(service.state.context.clues[playerID]).toBe(clue);
-    expect(service.state.value).toBe('pendingSelf');
+    const { players } = state.context
+    const turnNum = 1
+    const clues = getClues(players, turnNum)
+    expect(clues.get(2)).toBe(clue);
   })
   
   // test('submit self', () => {
