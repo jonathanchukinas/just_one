@@ -1,11 +1,6 @@
-// TODO: build machine Factory that accepts player 
-// TODO: move types/interfaces to new file
+// TODO: build machine Factory that accepts player
 // TODO: test CLUE.WITHDRAW
-// TODO: test DISCONNECT
-// TODO: test RECONNECT
 // TODO: finish
-// TODO: typescript
-// TODO: set context clues to undefined on start
 
 
 import { Machine, assign } from 'xstate';
@@ -147,18 +142,18 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   },
   on: {
     ADD_PLAYER: {
-      target: '#game',
+      target: 'unknown',
       actions: 'addPlayer',
     },
     NAME_PLAYER: {
       actions: 'namePlayer',
     },
     SUBMIT_CLUE: {
-      target: '#game',
+      target: 'unknown',
       actions: 'addClue',
     },
     WITHDRAW_CLUE: {
-      target: '#game',
+      target: 'unknown',
       actions: 'deleteClue',
     },
     // DISCONNECT: {
