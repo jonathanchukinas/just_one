@@ -150,3 +150,6 @@ In development, `pipenv install --dev` to install all, including those needed fo
     - CLient:
       - React
       - XState
+
+# Conventions
+- use `event` variable name for an event you're constructing with a mind to send to a machine. Use `e` as the function argument name in e.g. guard and action functions.

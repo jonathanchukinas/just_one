@@ -61,10 +61,20 @@ const namePlayer = assign({
   }
 })
 
+const setSelf = assign({
+  self: (ctx: GameContext, e) => {
+    const { players } = ctx;
+    const { playerID } = <E.SetSelf>e;
+    const self = getPlayer(players, playerID)
+    return self
+  }
+})
+
 const actions = {
   addClue,
   addPlayer,
   namePlayer,
+  setSelf,
 }
 
 
@@ -147,6 +157,10 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
     },
     NAME_PLAYER: {
       actions: 'namePlayer',
+    },
+    SET_SELF: {
+      target: 'unknown',
+      actions: 'setSelf',
     },
     SUBMIT_CLUE: {
       target: 'unknown',

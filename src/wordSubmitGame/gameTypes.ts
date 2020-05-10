@@ -56,6 +56,7 @@ export type GameEvent =
   | E.AddPlayer
   | E.NamePlayer
   | E.SubmitClue
+  | E.SetSelf
   // | E.WithdrawClue
   // | E.Disconnect
 

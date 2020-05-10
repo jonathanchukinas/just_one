@@ -43,7 +43,7 @@ describe('word game', () => {
       playerID: 2,
       clue: 'bananas'
     }
-    const { playerID, clue } = event
+    const { clue } = event
     const state = service.send(event)
     const { players } = state.context
     const turnNum = 1
@@ -51,28 +51,16 @@ describe('word game', () => {
     expect(clues.get(2)).toBe(clue);
   })
   
-  // test('submit self', () => {
-  //   const event = {
-  //     type: 'SUBMIT',
-  //     playerID: 'player1',
-  //     clue: 'apples'
-  //   } 
-  //   const { playerID, clue } = event
-  //   service.send(event)
-  //   expect(service.state.context.clues[playerID]).toBe(clue);
-  //   expect(service.state.value).toBe('pendingOthers');
-  // })
-  
-  // test('submit other (player 3)', () => {
-  //   const event = {
-  //     type: 'SUBMIT',
-  //     playerID: 'player3',
-  //     clue: 'oranges'
-  //   } 
-  //   const state = service.send(event)
-  //   expect(service.state.context.clues[event.playerID]).toBe(event.clue);
-  //   expect(service.state.value).toBe('pendingOthers');
-  // })
+  test('submit other (player 3)', () => {
+    const event = {
+      type: 'SUBMIT',
+      playerID: 'player3',
+      clue: 'oranges'
+    } 
+    const state = service.send(event)
+    expect(service.state.context.clues[event.playerID]).toBe(event.clue);
+    expect(service.state.value).toBe('pendingOthers');
+  })
 
  
   // test('Add player', () => {
