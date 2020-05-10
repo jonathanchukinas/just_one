@@ -40,9 +40,9 @@ describe('run an interpreted buttons game', () => {
     expect(turn3.context.roundNum).toEqual(3);
   })
 
-  test('End Game', () => {
-    const endGameState = buttonsGameService.send('END_ROUND');
-    expect(endGameState.done).toBe(true);
-  })
+  // test('End Game', () => {
+  //   const endGameState = buttonsGameService.send('END_ROUND');
+  //   expect(endGameState.done).toBe(true);
+  // })
   
 })

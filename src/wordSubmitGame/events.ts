@@ -7,6 +7,7 @@ export type NamePlayer = {
 export type AddPlayer = {
   type: 'ADD_PLAYER';
   playerID?: number;
+  isSelf: boolean;
 }
 
 export type SubmitClue = {
@@ -20,7 +21,7 @@ export type WithdrawClue = {
   playerID: number;
 }
 
-export type Disconnect = {
-  type: 'DISCONNECT';
-  playerID: number;
-}
+// export type Disconnect = {
+//   type: 'DISCONNECT';
+//   playerID: number;
+// }

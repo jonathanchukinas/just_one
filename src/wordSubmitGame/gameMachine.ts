@@ -98,10 +98,10 @@ const isCluePhaseComplete = (ctx: GameContext) => {
   return true
 }
 
-const amIHoldingUpCluePhase = (ctx: GameContext) => {
-  const id: PlayerID = ctx.self;
-  const player = getPlayer(ctx.players, id)
-  return !isReady(player);
+function amIHoldingUpCluePhase(ctx: GameContext): boolean {
+  const self = ctx.self
+  if (!self) { return false }
+  return !isReady(self);
 }
 
 function isReady(player: Player) {
@@ -128,18 +128,18 @@ const guards = {
 
 const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   id: 'game',
-  initial: 'unknown',
+  initial: 'noPlayers',
   context: {
-    self: 1,
     turnNumber: 1,
     players: new Map(),
   },
   states: {
+    noPlayers: {},
     unknown: {
       on: {
         '': [
           {
-            target: 'done',
+            target: 'complete',
             cond: 'allDone',
           },
           {
@@ -160,6 +160,7 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   },
   on: {
     ADD_PLAYER: {
+      target: '#game',
       actions: 'addPlayer',
     },
     NAME_PLAYER: {
@@ -173,10 +174,10 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
       target: '#game',
       actions: 'deleteClue',
     },
-    DISCONNECT: {
-      target: '#game',
-      actions: 'markDisconnected',
-    }
+    // DISCONNECT: {
+    //   target: '#game',
+    //   actions: 'markDisconnected',
+    // }
   }
 },
 {

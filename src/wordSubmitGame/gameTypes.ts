@@ -24,7 +24,7 @@ interface Player {
 type Players = Map<PlayerID, Player>;
 
 interface GameContext {
-  self: PlayerID;
+  self?: Player;
   players: Players;
   turnNumber: number;
 }
@@ -35,6 +35,7 @@ interface GameContext {
 
 interface GameSchema {
   states: {
+    noPlayers: {},
     unknown: {},
     pendingSelf: {},
     pendingOthers: {},
@@ -53,7 +54,7 @@ type GameEvent =
   | E.NamePlayer
   | E.SubmitClue
   | E.WithdrawClue
-  | E.Disconnect
+  // | E.Disconnect
 
 /**************************************
   export
