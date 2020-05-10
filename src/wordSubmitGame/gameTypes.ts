@@ -4,27 +4,31 @@
   CONTEXT
 **************************************/
 
-enum ConnectionStatus {
+export enum ConnectionStatus {
   Active,
   Disconnected,
 }
 
 // TODO: I want this to be a number, but number keys get converted to strings. What to do?
 // IDs start at zero.
-type PlayerID = number;
-type TurnNum = number
+export type PlayerID = number;
+export type TurnNum = number
 
-interface Player {
+export interface Player {
   connection: ConnectionStatus;
-  id: number;
+  id: PlayerID;
   name?: string;
   clues: Map<TurnNum, string>;
 }
 
-type Players = Map<PlayerID, Player>;
+export interface NoPlayer {
+  id: null
+}
 
-interface GameContext {
-  self?: Player;
+export type Players = Map<PlayerID, Player>;
+
+export interface GameContext {
+  self: NoPlayer | Player;
   players: Players;
   turnNumber: number;
 }
@@ -33,7 +37,7 @@ interface GameContext {
   MACHINE
 **************************************/
 
-interface GameSchema {
+export interface GameSchema {
   states: {
     noPlayers: {},
     unknown: {},
@@ -49,7 +53,7 @@ interface GameSchema {
 
 import * as E from './events'
 
-type GameEvent = 
+export type GameEvent = 
   | E.AddPlayer
   | E.NamePlayer
   | E.SubmitClue
@@ -57,19 +61,14 @@ type GameEvent =
   // | E.Disconnect
 
 /**************************************
-  export
+  functions
 **************************************/
 
-export type {
-  GameContext,
-  GameSchema,
-  GameEvent,
-  Player,
-  Players,
-  PlayerID,
-  TurnNum,
-}
-
-export {
-  ConnectionStatus,  
+export function getPlayer(players: Players, id: PlayerID): Player {
+  const player = players.get(id)
+  if (player) {
+    return player
+  } else {
+    throw(`Player${id} hasn't been created yet!`)
+  }
 }

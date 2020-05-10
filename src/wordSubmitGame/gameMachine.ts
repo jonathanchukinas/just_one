@@ -19,24 +19,10 @@ import type {
   TurnNum,
 } from './gameTypes'
 import {
-  ConnectionStatus,  
+  ConnectionStatus, 
+  getPlayer, 
 } from './gameTypes'
 import type * as E from './events'
-
-
-
-/**************************************
-  general
-**************************************/
-
-function getPlayer(players: Players, id: PlayerID): Player {
-  const player = players.get(id)
-  if (player) {
-    return player
-  } else {
-    throw(`Player${id} hasn't been created yet!`)
-  }
-}
 
 
 /**************************************
@@ -61,7 +47,7 @@ const addPlayer = assign({
   players: (ctx: GameContext, e) => {
     const { players } = ctx;
     let { playerID } = <E.AddPlayer>e;
-    if (!playerID) { playerID = players.size };
+    if (!playerID) { playerID = players.size + 1 };
     players.set(playerID, {
       connection: ConnectionStatus.Active,
       id: playerID,
@@ -100,7 +86,7 @@ const isCluePhaseComplete = (ctx: GameContext) => {
 
 function amIHoldingUpCluePhase(ctx: GameContext): boolean {
   const self = ctx.self
-  if (!self) { return false }
+  if (self.id === null) { return false }
   return !isReady(self);
 }
 
@@ -130,6 +116,7 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   id: 'game',
   initial: 'noPlayers',
   context: {
+    self: { id: null },
     turnNumber: 1,
     players: new Map(),
   },

@@ -1,6 +1,16 @@
 import { gameMachine } from './gameMachine'
 import { interpret } from 'xstate';
-
+import type {
+  GameContext,
+  GameSchema,
+  GameEvent,
+  Player,
+  Players,
+  PlayerID,
+  TurnNum,
+} from './gameTypes';
+import { getPlayer } from './gameTypes';
+import type * as E from './events';
 
 
 describe('word game', () => {
@@ -13,10 +23,18 @@ describe('word game', () => {
     expect(service.state.value).toBe('noPlayers');
   })
     
-  // test('create players', () => {
-  //   const state = service.send('ADD_PLAYER')
-  //   expect(state.context.status.player4).toBe('active')
-  // })
+  test('create players', () => {
+    const events: Array<E.AddPlayer|E.NamePlayer> = [
+      { type: 'ADD_PLAYER', playerID: 1 },
+      { type: 'ADD_PLAYER' },
+      { type: 'ADD_PLAYER' },
+      { type: 'NAME_PLAYER', playerID: 1, playerName: 'Jonathan' },
+      { type: 'NAME_PLAYER', playerID: 3, playerName: 'Nicholas' },
+    ]
+    service.send(events)
+    const nicholas = getPlayer(service.state.context.players, 3)
+    expect(nicholas.name).toBe('Nicholas')
+  })
   
   // test('submit other (player 2)', () => {
   //   const event = {
