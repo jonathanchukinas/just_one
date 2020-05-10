@@ -1,6 +1,7 @@
 import type {
   PlayerID,
   TurnNum,
+  Clue,
 } from './simpleTypes'
 
 /**************************************
@@ -55,7 +56,7 @@ export type GameEvent =
   | E.AddPlayer
   | E.NamePlayer
   | E.SubmitClue
-  | E.WithdrawClue
+  // | E.WithdrawClue
   // | E.Disconnect
 
 /**************************************
@@ -69,4 +70,17 @@ export function getPlayer(players: Players, id: PlayerID): Player {
   } else {
     throw(`Player${id} hasn't been created yet!`)
   }
+}
+
+type ClueSummaries = Map<PlayerID, Clue>
+export function getClues(players: Players, turnNum: TurnNum): ClueSummaries {
+  let clueSummaries: ClueSummaries = new Map();
+  for (const player of players.values()) {
+    const clue = player.clues.get(turnNum)
+    if (typeof clue !== 'undefined') {
+      const playerID = player.id
+      clueSummaries.set(playerID, clue)
+    }
+  }
+  return clueSummaries
 }

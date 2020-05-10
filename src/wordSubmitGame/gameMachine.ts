@@ -1,6 +1,6 @@
-// TODO: build machine Factory that accepts player
-// TODO: test CLUE.WITHDRAW
-// TODO: finish
+// TODO finish tests
+// TODO build UI
+// TODO test CLUE.WITHDRAW
 
 
 import { Machine, assign } from 'xstate';
@@ -9,10 +9,10 @@ import type {
   GameSchema,
   GameEvent,
   Player,
-  Players,
-  PlayerID,
-  TurnNum,
 } from './gameTypes'
+import type {
+  TurnNum,
+} from './simpleTypes'
 import {
   ConnectionStatus, 
   getPlayer, 
@@ -152,10 +152,10 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
       target: 'unknown',
       actions: 'addClue',
     },
-    WITHDRAW_CLUE: {
-      target: 'unknown',
-      actions: 'deleteClue',
-    },
+    // WITHDRAW_CLUE: {
+    //   target: 'unknown',
+    //   actions: 'deleteClue',
+    // },
     // DISCONNECT: {
     //   target: '#game',
     //   actions: 'markDisconnected',

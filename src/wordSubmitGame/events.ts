@@ -26,7 +26,7 @@ export type SubmitClue = {
   clue: string;
 }
 
-export type WithdrawClue = {
-  type: 'WITHDRAW_CLUE';
-  playerID: PlayerID;
-}
+// export type WithdrawClue = {
+//   type: 'WITHDRAW_CLUE';
+//   playerID: PlayerID;
+// }
