@@ -30,6 +30,7 @@ export default function WordSubmitGame() {
     { type: 'ADD_PLAYER' },
     { type: 'NAME_PLAYER', playerID: 1, playerName: 'Jonathan' },
     { type: 'NAME_PLAYER', playerID: 3, playerName: 'Nicholas' },
+    { type: 'SET_SELF', playerID: 1 },
   ]
   useEffect(()=>{
     send(events)

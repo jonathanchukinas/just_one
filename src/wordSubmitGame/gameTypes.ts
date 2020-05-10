@@ -86,11 +86,7 @@ export function getClues(players: Players, turnNum: TurnNum): ClueSummaries {
 }
 
 export function isSelf(ctx: GameContext, player: Player): boolean {
-  if (ctx.self.id === player.id) {
-    return true
-  } else {
-    return false
-  }
+  return ctx.self.id === player.id
 }
 
 export function renderName(player: Player): string {
