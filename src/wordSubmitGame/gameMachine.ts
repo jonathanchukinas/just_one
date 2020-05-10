@@ -14,13 +14,28 @@ import type {
   GameSchema,
   GameEvent,
   Player,
-  PlayerIndex,
+  Players,
+  PlayerID,
 } from './gameTypes'
 import {
   ConnectionStatus,  
 } from './gameTypes'
 import type * as E from './events'
 
+
+
+/**************************************
+  general
+**************************************/
+
+function getPlayer(players: Players, id: PlayerID): Player {
+  const player = players.get(id)
+  if (player) {
+    return player
+  } else {
+    throw(`Player${id} hasn't been created yet!`)
+  }
+}
 
 
 /**************************************
@@ -58,18 +73,9 @@ const addPlayer = assign({
 const namePlayer = assign({
   players: (ctx: GameContext, e) => {
     const { players } = ctx;
-    let { PlayerIndex, playerName } = <E.NamePlayer>e;
-    PlayerIndex = PlayerIndex ? PlayerIndex : Object.keys(players).length + 1;
-    const player: Player = {
-      connection: ConnectionStatus.Active,
-      index: PlayerIndex,
-      clues: {},
-      name: playerName,
-    }
-    return {
-      ...players,
-      [PlayerIndex]: player
-    }
+    const { playerID, playerName } = <E.NamePlayer>e;
+    getPlayer(players, playerID).name = playerName
+    return players
   }
 })
 
@@ -85,10 +91,10 @@ const actions = {
 **************************************/
 
 const allDone = (ctx: GameContext) => {
-  function reducer(areDone: boolean, id: PlayerIndex): boolean {
+  function reducer(areDone: boolean, id: PlayerID): boolean {
     return areDone && isPlayerReady(ctx, id)
   }
-  const PlayerIndexs: PlayerIndex[] = Object.keys(ctx.players)
+  const PlayerIndexs: PlayerID[] = Object.keys(ctx.players)
   return PlayerIndexs.reduce(reducer, true)
 }
 
@@ -97,16 +103,14 @@ const pendingSelf = (ctx: GameContext) => {
   return !isPlayerReady(ctx, PlayerIndex);
 }
 
-function isPlayerReady(ctx: GameContext, id: PlayerIndex) {
+function isPlayerReady(ctx: GameContext, id: PlayerID) {
   return isClueSubmitted(ctx, id) || !isPlayerActive(ctx, id)
 }
 
-function isPlayerActive(ctx: GameContext, id: PlayerIndex) {
-  if (ctx.status[id] === 'active') {
-    return true;
-  } else {
-    return false;
-  }
+function isPlayerActive(ctx: GameContext, id: PlayerID) {
+  const player = ctx.players.get(id)
+  if (!player) { throw(`Player hasn't been created yet!`)}
+  return (player.connection === ConnectionStatus.Active)
 }
 
 function isClueSubmitted(ctx, PlayerIndex) {

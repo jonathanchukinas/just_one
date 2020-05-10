@@ -62,7 +62,7 @@ export type {
   GameSchema,
   GameEvent,
   Player,
-  PlayerIndex,
+  PlayerID,
 }
 
 export {
