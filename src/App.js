@@ -3,7 +3,7 @@ import NavBar from './NavBar';
 import ChatApp from './ChatApp/App';
 import ButtonsGame from './ButtonsGame/App';
 import HelloServerButton from './HelloServerDemo/App';
-// import WordSubmitGame from './WordSubmitGame/App';
+import WordSubmitGame from './WordSubmitGame/App';
 import TimedToggle from './TimedToggle/App'
 
 export default function App() {
@@ -13,10 +13,10 @@ export default function App() {
       text: "Timed Toggle",
       page: <TimedToggle/>,
     },
-    // {
-    //   text: "The Word-Submit Game",
-    //   page: <WordSubmitGame/>,
-    // },
+    {
+      text: "The Word-Submit Game",
+      page: <WordSubmitGame/>,
+    },
     {
       text: "The Buttons Game",
       page: <ButtonsGame/>,

@@ -1,5 +1,5 @@
-import { Machine, assign } from 'xstate';
-import type * as T from './types'
+import { Machine } from 'xstate';
+// import type * as T from './types'
 
 
 /**************************************
@@ -22,9 +22,9 @@ const guards = {
   DELAYS
 **************************************/
 
-function randFloat(min: number, max: number): number {
-  return Math.random() * (max - min) + min; 
-}
+// function randFloat(min: number, max: number): number {
+//   return Math.random() * (max - min) + min; 
+// }
 
 const delays = {
   // RANDOM_DELAY: () => randFloat(0.5, 2.0),
@@ -42,22 +42,20 @@ export const machine = Machine({
   initial: 'off',
   states: {
     off: {
-      on: {
-        TOGGLE: 'on'
-      },
-      after: [{
-        delay: 'RANDOM_DELAY',
-        target: 'on',
-      }]
+      // on: {
+      //   TOGGLE: 'on'
+      // },
+      after: {1000: 'on'}
     },
     on: {
-      on: {
-        TOGGLE: 'off'
-      },
-      after: [{
-        delay: 'RANDOM_DELAY',
-        target: 'on'
-      }]
+      // on: {
+        //   TOGGLE: 'off'
+        // },
+      after: {1000: 'off'}
+      // after: [{
+      //   delay: 'RANDOM_DELAY',
+      //   target: 'on'
+      // }]
     },
   },
 },
