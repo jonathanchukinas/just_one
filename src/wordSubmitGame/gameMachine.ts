@@ -1,8 +1,3 @@
-// TODO finish tests
-// TODO build UI
-// TODO test CLUE.WITHDRAW
-
-
 import { Machine, assign } from 'xstate';
 import type {
   GameContext,
@@ -31,7 +26,7 @@ function getTurnNumber(): TurnNum {
 const addClue = assign({
   players: (ctx: GameContext, e) => {
     const { players } = ctx;
-    const { playerID, clue } = <E.SubmitClue>e;
+    const { playerID, clue } = e as E.SubmitClue;
     const turnNum = getTurnNumber();
     players.get(playerID)?.clues.set(turnNum, clue)
     return players
@@ -41,7 +36,7 @@ const addClue = assign({
 const addPlayer = assign({
   players: (ctx: GameContext, e) => {
     const { players } = ctx;
-    let { playerID } = <E.AddPlayer>e;
+    let { playerID } = e as E.AddPlayer;
     if (!playerID) { playerID = players.size + 1 };
     players.set(playerID, {
       connection: ConnectionStatus.Active,
@@ -55,7 +50,7 @@ const addPlayer = assign({
 const namePlayer = assign({
   players: (ctx: GameContext, e) => {
     const { players } = ctx;
-    const { playerID, playerName } = <E.NamePlayer>e;
+    const { playerID, playerName } = e as E.NamePlayer;
     getPlayer(players, playerID).name = playerName
     return players
   }
@@ -64,7 +59,7 @@ const namePlayer = assign({
 const setSelf = assign({
   self: (ctx: GameContext, e) => {
     const { players } = ctx;
-    const { playerID } = <E.SetSelf>e;
+    const { playerID } = e as E.SetSelf;
     const self = getPlayer(players, playerID)
     return self
   }
@@ -117,12 +112,12 @@ const guards = {
   MACHINE
 **************************************/
 
-const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
+export const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   id: 'game',
   initial: 'noPlayers',
   context: {
     self: { id: null },
-    turnNumber: 1,
+    turnNum: 1,
     players: new Map(),
   },
   states: {
@@ -180,6 +175,3 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   guards,
   actions,
 })
-
-
-export { gameMachine }

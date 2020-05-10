@@ -3,6 +3,7 @@ import type {
   TurnNum,
   Clue,
 } from './simpleTypes'
+import * as E from './events'
 
 /**************************************
   CONTEXT
@@ -29,7 +30,7 @@ export type Players = Map<PlayerID, Player>;
 export interface GameContext {
   self: NoPlayer | Player;
   players: Players;
-  turnNumber: number;
+  turnNum: TurnNum;
 }
 
 /**************************************
@@ -50,8 +51,6 @@ export interface GameSchema {
   EVENT
 **************************************/
 
-import * as E from './events'
-
 export type GameEvent = 
   | E.AddPlayer
   | E.NamePlayer
@@ -69,7 +68,7 @@ export function getPlayer(players: Players, id: PlayerID): Player {
   if (player) {
     return player
   } else {
-    throw(`Player${id} hasn't been created yet!`)
+    throw new Error(`Player${id} hasn't been created yet!`)
   }
 }
 
@@ -84,4 +83,17 @@ export function getClues(players: Players, turnNum: TurnNum): ClueSummaries {
     }
   }
   return clueSummaries
+}
+
+export function isSelf(ctx: GameContext, player: Player): boolean {
+  if (ctx.self.id === player.id) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export function renderName(player: Player): string {
+  const playerName = player.name
+  return playerName ? playerName : `Player${player.id}`
 }
