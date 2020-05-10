@@ -5,7 +5,7 @@ export type NamePlayer = {
 }
 
 export type AddPlayer = {
-  type: 'PLAYER_ADD';
+  type: 'ADD_PLAYER';
   playerID?: number;
 }
 

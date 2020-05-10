@@ -159,17 +159,17 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
     pendingOthers: {},
   },
   on: {
-    PLAYER_ADD: {
+    ADD_PLAYER: {
       actions: 'addPlayer',
     },
-    PLAYER_NAME: {
+    NAME_PLAYER: {
       actions: 'namePlayer',
     },
-    CLUE.SUBMIT: {
+    SUBMIT_CLUE: {
       target: '#game',
       actions: 'addClue',
     },
-    CLUE.WITHDRAW: {
+    WITHDRAW_CLUE: {
       target: '#game',
       actions: 'deleteClue',
     },
