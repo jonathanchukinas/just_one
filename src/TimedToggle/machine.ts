@@ -1,5 +1,5 @@
-import { Machine } from 'xstate';
-// import type * as T from './types'
+import { Machine, assign, spawn } from 'xstate';
+import type * as T from './types'
 
 
 /**************************************
@@ -33,11 +33,12 @@ function randFloat(min: number, max: number): number {
 
 
 /**************************************
-  MACHINE
+  CHILD
 **************************************/
-// TODO
-// export const machine = Machine<T.Context, T.States, T.Event>({
-export const machine = Machine({
+
+
+
+const machine = Machine<T.Context, T.States, T.Event>({
   id: 'game',
   initial: 'off',
   states: {
@@ -51,8 +52,8 @@ export const machine = Machine({
       // on: {
         //   TOGGLE: 'off'
         // },
-      // after: {2000: 'off'}
-      type: 'final',
+      after: {2000: 'off'}
+      // type: 'final',
       // after: [{
       //   delay: 'RANDOM_DELAY',
       //   target: 'on'
@@ -71,3 +72,28 @@ export const machine = Machine({
     },
   },
 })
+
+
+/**************************************
+  PARENT
+**************************************/
+const parent = Machine({
+  id: 'game',
+  initial: 'off',
+  context: {
+    childMachine: null,
+  },
+  states: {
+    spawning: {
+      entry: assign({
+        childMachine: () => {
+          return spawn(child)
+        }
+      })
+    },
+    waiting: {},
+  },
+})
+
+
+export { parent }
