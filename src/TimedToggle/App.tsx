@@ -2,16 +2,14 @@ import React from 'react';
 import { useMachine } from '@xstate/react';
 import { machine } from './machine';
 // import type * as t from './types';
+import Child from './Child'
 
 
 export default function TimedToggle() {
 
-  const [state] = useMachine(machine)
-  console.log(state)
-
   return <>  
-    <p>Toggle State: '{ state.value }'</p>
-    <p>Done?: '{ state.done ? 'true' : 'false' }'</p>
+    {/* ['HELLO', 'BYE'].map(name => <Child name={ name } />) */}
+    <Child name={ 'BILL' } />
   </>;
 
 }
