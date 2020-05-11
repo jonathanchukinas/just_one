@@ -9,7 +9,7 @@ export default function TimedToggle() {
   const [state] = useMachine(machine)
 
   return <>  
-    { state.value }
+    Toggle State: '{ state.value }'
   </>;
 
 }

@@ -26,10 +26,10 @@ const guards = {
 //   return Math.random() * (max - min) + min; 
 // }
 
-const delays = {
-  // RANDOM_DELAY: () => randFloat(0.5, 2.0),
-  RANDOM_DELAY: () => 1000,
-}
+// const delays = {
+//   // RANDOM_DELAY: () => randFloat(0.5, 2.0),
+//   RANDOM_DELAY: () => 1000,
+// }
 
 
 /**************************************
@@ -45,7 +45,7 @@ export const machine = Machine({
       // on: {
       //   TOGGLE: 'on'
       // },
-      after: {1000: 'on'}
+      after: {RANDOM_DELAY: 'on'}
     },
     on: {
       // on: {
@@ -62,5 +62,7 @@ export const machine = Machine({
 {
   guards,
   actions,
-  delays,
+  delays: {
+    RANDOM_DELAY: () => 5000,
+  },
 })
