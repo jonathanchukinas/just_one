@@ -7,9 +7,9 @@ import Child from './Child'
 
 export default function TimedToggle() {
 
-  return <>  
-    {/* ['HELLO', 'BYE'].map(name => <Child name={ name } />) */}
-    <Child name={ 'BILL' } />
-  </>;
+  return (
+    ['HELLO', 'BYE'].map(name => <Child name={ name } />)
+  )
+;
 
 }
