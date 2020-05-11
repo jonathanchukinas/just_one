@@ -51,7 +51,8 @@ export const machine = Machine({
       // on: {
         //   TOGGLE: 'off'
         // },
-      after: {2000: 'off'}
+      // after: {2000: 'off'}
+      type: 'final',
       // after: [{
       //   delay: 'RANDOM_DELAY',
       //   target: 'on'

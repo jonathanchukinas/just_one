@@ -7,9 +7,11 @@ import { machine } from './machine';
 export default function TimedToggle() {
 
   const [state] = useMachine(machine)
+  console.log(state)
 
   return <>  
-    Toggle State: '{ state.value }'
+    <p>Toggle State: '{ state.value }'</p>
+    <p>Done?: '{ state.done ? 'true' : 'false' }'</p>
   </>;
 
 }
