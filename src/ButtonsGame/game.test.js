@@ -1,23 +1,17 @@
-import buttonsGameMachine from './game';
-import { interpret } from 'xstate';
-import PubSub from 'pubsub-js'
-
-
-class Game {
-  constructor() {
-    this.count = 0;
-    PubSub.subscribe('Increment', ()=>{this.increment();})
-  }
-  increment() {
-    this.count++;
-    console.log('count:', this.count);
-  }
-}
+import { Game } from './game';
+import PubSub from 'pubsub-js';
 
 
 it('increments correctly', () => {
   const game = new Game();
-  expect(game.count).toEqual(0);
-  PubSub.publishSync('Increment');
-  expect(game.count).toEqual(1);  
+  expect(game.getState()).toEqual('round1');
+  const event = {
+    type: 'END_ROUND'
+  }
+  PubSub.publishSync('Game', event);
+  expect(game.getState()).toEqual('round2');
+  PubSub.publishSync('Game', event);
+  expect(game.getState()).toEqual('round3');
+  PubSub.publishSync('Game', event);
+  expect(game.machine.state.done).toBeTruthy();
 });  

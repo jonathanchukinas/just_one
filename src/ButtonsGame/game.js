@@ -1,42 +1,49 @@
-import { Machine, assign } from 'xstate';
+import { Machine, interpret } from 'xstate';
+import PubSub from 'pubsub-js';
 
-// TODO naming convention for id?
-const buttonsGameMachine = Machine({
-  id: 'buttonsGame',
-  context: {
-    roundNum: 0,
-    playerCount: 0,
-    finalRoundNum: 3
-  },
-  initial: 'idle',
+
+
+const gameMachine = Machine({
+  id: 'game',
+  initial: 'round1',
   states: {
-    idle: {
+    round1: {
       on: {
-        ADD_PLAYER: 'idle',
-        START_GAME: 'playRound',
+        END_ROUND: 'round2',
       }
     },
-    playRound: {
-      entry: 'incrementRoundNum',
+    round2: {
       on: {
-        END_ROUND: [
-          { target: 'endGame', cond: 'isEndGame' },
-          { target: 'playRound' },
-        ]
+        END_ROUND: 'round3',
+      }
+    },
+    round3: {
+      on: {
+        END_ROUND: 'endGame',
       }
     },
     endGame: {
       type: 'final',
     },
   },
-},{
-  actions: {
-    incrementRoundNum: context => context.roundNum++,
-  },
-  guards: {
-    isEndGame: context => (context.roundNum == context.finalRoundNum),
-  }
-},  
-);
+});
 
-export default buttonsGameMachine
+
+export class Game {
+
+  constructor() {
+    this.machine = interpret(gameMachine).start();
+    PubSub.subscribe('Game', (_, data)=>{this.handleEvent(data);})
+  }
+
+  handleEvent(event) {
+    this.machine.send(event)
+  }
+
+  getState() {
+    const state = this.machine.state.value;
+    console.log(state);
+    return state;
+  }
+
+}
