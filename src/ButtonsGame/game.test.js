@@ -4,14 +4,14 @@ import PubSub from 'pubsub-js';
 
 it('increments correctly', () => {
   const game = new Game();
-  expect(game.getState()).toEqual('round1');
+  expect(game.getRoundNumber()).toEqual(1);
   const event = {
     type: 'END_ROUND'
   }
   PubSub.publishSync('Game', event);
-  expect(game.getState()).toEqual('round2');
+  expect(game.getRoundNumber()).toEqual(2);
   PubSub.publishSync('Game', event);
-  expect(game.getState()).toEqual('round3');
+  expect(game.getRoundNumber()).toEqual(3);
   PubSub.publishSync('Game', event);
   expect(game.machine.state.done).toBeTruthy();
 });  

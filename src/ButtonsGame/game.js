@@ -1,31 +1,39 @@
-import { Machine, interpret } from 'xstate';
+import { Machine, interpret, assign } from 'xstate';
 import PubSub from 'pubsub-js';
-
 
 
 const gameMachine = Machine({
   id: 'game',
-  initial: 'round1',
+  context: {
+    round: 0
+  },
+  initial: 'round',
   states: {
-    round1: {
+    round: {
+      entry: 'incrementRound',
       on: {
-        END_ROUND: 'round2',
-      }
-    },
-    round2: {
-      on: {
-        END_ROUND: 'round3',
-      }
-    },
-    round3: {
-      on: {
-        END_ROUND: 'endGame',
+        END_ROUND: [{
+          target: 'endGame',
+          cond: 'isLastRound',
+        },{
+          target: 'round',
+          internal: false,
+        }]
       }
     },
     endGame: {
       type: 'final',
     },
   },
+},{
+  actions: {
+    incrementRound: assign({
+      round: (ctx) => ctx.round + 1
+    })
+  },
+  guards: {
+    isLastRound: (ctx)=>ctx.round==3,
+  }
 });
 
 
@@ -44,6 +52,10 @@ export class Game {
     const state = this.machine.state.value;
     console.log(state);
     return state;
+  }
+
+  getRoundNumber() {
+    return this.machine.state.context.round;
   }
 
 }
