@@ -1,8 +1,28 @@
-import { Machine, interpret, assign } from 'xstate';
+import { Machine, interpret, assign, MachineConfig, Interpreter } from 'xstate';
 import PubSub from 'pubsub-js';
 
 
-const gameMachine = Machine({
+type GameContext = {
+  round: number;
+}
+
+
+type GameSchema = {
+  states: {
+    round: {},
+    endGame: {},
+  }
+}
+
+
+type E_EndRound = {
+  type: 'END_ROUND',
+}
+
+type GameEvent = E_EndRound;
+
+
+const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   id: 'game',
   context: {
     round: 0
@@ -37,14 +57,19 @@ const gameMachine = Machine({
 });
 
 
-export class Game {
 
+export class Game {
+  
+  id: number
+  machine: Interpreter<GameContext, GameSchema, GameEvent>
+  
   constructor() {
+    this.id = 1;
     this.machine = interpret(gameMachine).start();
-    PubSub.subscribe('Game', (_, data)=>{this.handleEvent(data);})
+    PubSub.subscribe('Game', (_: string, data: E_EndRound)=>{this.handleEvent(data);})
   }
 
-  handleEvent(event) {
+  handleEvent(event: E_EndRound) {
     this.machine.send(event)
   }
 
