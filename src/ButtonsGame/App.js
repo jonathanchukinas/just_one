@@ -4,7 +4,7 @@ import { game } from './game';
 
 export default function ButtonsGame() {
 
-  const [gameState, setGameState] = useState(game.getState())
+  const [gameState, setGameState] = useState(game.state)
 
   
   function nextRound() {

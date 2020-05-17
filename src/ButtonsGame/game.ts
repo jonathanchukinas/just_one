@@ -76,10 +76,10 @@ export class Game {
     // if (!this.machine.state.done) {
       this.machine.send(event);
     // }
-    return this.getState()
+    return this.state
   }
 
-  getState(): GameState {
+  get state(): GameState {
     const isDone = this.machine.state.done;
     return {
       round: this.machine.state.context.round,
