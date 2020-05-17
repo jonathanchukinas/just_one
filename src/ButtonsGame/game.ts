@@ -1,5 +1,5 @@
 import { Machine, interpret, assign, Interpreter } from 'xstate';
-import PubSub from 'pubsub-js';
+import { subscribe } from './pubsub'
 
 
 type GameContext = {
@@ -19,7 +19,7 @@ type E_EndRound = {
   type: 'END_ROUND',
 }
 
-type GameEvent = E_EndRound;
+export type GameEvent = E_EndRound;
 
 
 const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
@@ -73,13 +73,19 @@ export class Game {
     this.machine = interpret(gameMachine).start();
     this.observers = [];
     this.previousState = this.state;
-    PubSub.subscribe('Game', (_: string, data: E_EndRound)=>{this.handleEvent(data);})
+    subscribe({ type: 'Game' }, (_: string, event: GameEvent)=>{this.handleEvent(event);})
   }
 
-  handleEvent(event: E_EndRound): GameState {
+  handleEvent(event: GameEvent): GameState {
     this.machine.send(event);
+    // TODO can these two lines be combined?
     this.notifyObservers();
     return this.state;
+  }
+
+  handleMessage(_: string, event: GameEvent) {
+    const state = this.handleEvent(event);
+    return state; 
   }
 
   registerObserver(observer: Function): void {

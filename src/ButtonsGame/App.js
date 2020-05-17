@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { game } from './game';
+import { publish } from './pubsub'
 
 
 export default function ButtonsGame() {
@@ -11,8 +12,9 @@ export default function ButtonsGame() {
   },[])
 
   function nextRound() {
+    const channel = { type: 'Game' }
     const eventEndRound = { type: 'END_ROUND' };
-    game.handleEvent(eventEndRound);
+    publish(channel, eventEndRound);
   }
 
   function renderRound() {
