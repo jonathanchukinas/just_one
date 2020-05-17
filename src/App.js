@@ -10,12 +10,12 @@ export default function App() {
   
   const navLinks = [
     {
-      text: "The Word-Submit Game",
-      page: <WordSubmitGame/>,
-    },
-    {
       text: "The Buttons Game",
       page: <ButtonsGame/>,
+    },
+    {
+      text: "The Word-Submit Game",
+      page: <WordSubmitGame/>,
     },
     {
       text: "Chat App",

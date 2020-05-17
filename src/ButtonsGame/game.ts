@@ -1,4 +1,4 @@
-import { Machine, interpret, assign, MachineConfig, Interpreter } from 'xstate';
+import { Machine, interpret, assign, Interpreter } from 'xstate';
 import PubSub from 'pubsub-js';
 
 
@@ -52,35 +52,42 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
     })
   },
   guards: {
-    isLastRound: (ctx)=>ctx.round==3,
+    isLastRound: (ctx)=>ctx.round === 3,
   }
 });
 
 
+type GameState = {
+  round: number,
+  isDone: boolean,
+}
+
 
 export class Game {
-  
-  id: number
+
   machine: Interpreter<GameContext, GameSchema, GameEvent>
   
   constructor() {
-    this.id = 1;
     this.machine = interpret(gameMachine).start();
     PubSub.subscribe('Game', (_: string, data: E_EndRound)=>{this.handleEvent(data);})
   }
 
-  handleEvent(event: E_EndRound) {
-    this.machine.send(event)
+  handleEvent(event: E_EndRound): GameState {
+    // if (!this.machine.state.done) {
+      this.machine.send(event);
+    // }
+    return this.getState()
   }
 
-  getState() {
-    const state = this.machine.state.value;
-    console.log(state);
-    return state;
-  }
-
-  getRoundNumber() {
-    return this.machine.state.context.round;
+  getState(): GameState {
+    const isDone = this.machine.state.done;
+    return {
+      round: this.machine.state.context.round,
+      isDone: (typeof isDone === 'undefined') ? false : isDone
+    }
   }
 
 }
+
+
+export const game = new Game();
