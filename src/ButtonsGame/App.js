@@ -7,7 +7,7 @@ export default function ButtonsGame() {
   const [gameState, setGameState] = useState(game.state)
 
   useEffect(()=>{
-    game.addCallback(setGameState);
+    game.registerObserver(setGameState);
   },[])
 
   function nextRound() {
