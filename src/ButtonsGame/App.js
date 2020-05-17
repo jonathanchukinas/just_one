@@ -1,2 +1,2 @@
-import ButtonsGame from './components/ButtonsGame'
+import ButtonsGame from './ButtonsGame'
 export default ButtonsGame
