@@ -66,17 +66,22 @@ type GameState = {
 export class Game {
 
   machine: Interpreter<GameContext, GameSchema, GameEvent>
+  callbacks: Function[]
   
   constructor() {
     this.machine = interpret(gameMachine).start();
+    this.callbacks = [];
     PubSub.subscribe('Game', (_: string, data: E_EndRound)=>{this.handleEvent(data);})
   }
 
   handleEvent(event: E_EndRound): GameState {
-    // if (!this.machine.state.done) {
-      this.machine.send(event);
-    // }
+    this.machine.send(event);
+    this.callbacks.forEach(callback => { callback(this.state) })
     return this.state
+  }
+
+  addCallback(func: Function): void {
+    this.callbacks.push(func)
   }
 
   get state(): GameState {

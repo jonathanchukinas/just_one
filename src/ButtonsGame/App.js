@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { game } from './game';
 
 
@@ -6,10 +6,13 @@ export default function ButtonsGame() {
 
   const [gameState, setGameState] = useState(game.state)
 
-  
+  useEffect(()=>{
+    game.addCallback(setGameState);
+  },[])
+
   function nextRound() {
     const eventEndRound = { type: 'END_ROUND' };
-    setGameState(game.handleEvent(eventEndRound));
+    game.handleEvent(eventEndRound);
   }
 
   function renderRound() {
