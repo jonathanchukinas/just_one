@@ -80,13 +80,15 @@ export class Game {
   }
 
   get state(): GameState {
-    const isDone = this.machine.state.done;
     return {
       round: this.machine.state.context.round,
-      isDone: (typeof isDone === 'undefined') ? false : isDone
+      isDone: (()=>{
+        const isDone = this.machine.state.done;
+        return (typeof isDone === 'undefined') ? false : isDone
+      })()
     }
   }
-
+  
 }
 
 
