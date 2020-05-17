@@ -1,3 +1,44 @@
+
+/************************************************
+  EVENTS
+************************************************/
+
+export type E_EndRound = {
+  type: 'END_ROUND',
+}
+
+/************************************************
+  GAME
+************************************************/
+
+export type GameContext = {
+  round: number;
+}
+
+export type GameState = {
+  round: number,
+  isDone: boolean,
+}
+
+export type GameSchema = {
+  states: {
+    round: {},
+    endGame: {},
+  }
+}
+
+export type GameEvent = E_EndRound;
+
+/************************************************
+  PLAYER
+************************************************/
+
+
+/************************************************
+  Future Only
+************************************************/
+
+
 interface Flavoring<FlavorT> {
   _type?: FlavorT;
 };

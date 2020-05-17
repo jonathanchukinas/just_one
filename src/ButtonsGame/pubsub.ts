@@ -1,5 +1,5 @@
 import PubSub from 'pubsub-js';
-import type { GameEvent } from './game'
+import type { GameEvent } from './types'
 
 /*
 

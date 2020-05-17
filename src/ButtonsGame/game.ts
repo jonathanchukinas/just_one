@@ -1,25 +1,6 @@
 import { Machine, interpret, assign, Interpreter } from 'xstate';
 import { subscribe } from './pubsub'
-
-
-type GameContext = {
-  round: number;
-}
-
-
-type GameSchema = {
-  states: {
-    round: {},
-    endGame: {},
-  }
-}
-
-
-type E_EndRound = {
-  type: 'END_ROUND',
-}
-
-export type GameEvent = E_EndRound;
+import { GameContext, GameState, GameSchema, GameEvent } from './types'
 
 
 const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
@@ -56,11 +37,6 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   }
 });
 
-
-type GameState = {
-  round: number,
-  isDone: boolean,
-}
 
 
 export class Game {
