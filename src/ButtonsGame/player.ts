@@ -12,14 +12,15 @@ import type {
 } from './types';
 
 
-// TODO can these be made into regular functions at the bottom?
-// const sendIsReady = function(ctx: P_Context): void {
-//   const { id } = ctx;
-//   const channel: Channel = { type: 'Game' };
-//   const event: E_IsReady = { type: 'IS_READY', id };
-//   publish(channel, event);
-// }
+// FIXME can these be made into regular functions at the bottom?
+const sendIsReady = function(ctx: P_Context): void {
+  const { id } = ctx;
+  const channel: Channel = { type: 'Game' };
+  const event: E_IsReady = { type: 'IS_READY', id };
+  publish(channel, event);
+}
 
+// FIXME this one may not be necessary:
 // const sendIsNotReady = function(ctx: P_Context): void {
 //   const { id } = ctx;
 //   const channel: Channel = { type: 'Game' };
@@ -108,13 +109,17 @@ export class Player {
     return state;
   }
 
+  get isReady(): boolean {
+    return this.machine.state.matches('complete');
+  }
+
 }
 
 
-const players: Player[] = [
-  new Player(1, 'Mary'),
-  new Player(2, 'Jimmy'),
-]
+// const players: Player[] = [
+//   new Player(1, 'Mary'),
+//   new Player(2, 'Jimmy'),
+// ]
 
 // const playersMap: G_Players = new Map();
 // players.forEach(player => {

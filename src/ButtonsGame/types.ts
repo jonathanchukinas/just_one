@@ -1,5 +1,5 @@
 
-type PlayerID = number;
+export type PlayerID = number;
 
 /************************************************
   EVENTS
@@ -23,6 +23,7 @@ export type E_Toggle = {
 // to next phase.
 export type E_IsReady = {
   type: 'IS_READY',
+  // FIXME this may not be needed:
   id: PlayerID,
 }
 

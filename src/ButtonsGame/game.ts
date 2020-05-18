@@ -7,8 +7,10 @@ import type {
   Event,
   G_Player,
   E_AddPlayer,
+  PlayerID,
+  E_EndRound,
 } from './types';
-// import { playersMap } from './player';
+import { Player } from './player';
 
 
 const gameMachine = Machine<G_Context, G_Schema, Event>({
@@ -61,15 +63,21 @@ export class Game {
   machine: Interpreter<G_Context, G_Schema, Event>
   observers: Function[]
   previousState: G_PublicState
+  players: Map<PlayerID, Player>
   
   constructor() {
     this.machine = interpret(gameMachine).start();
     this.observers = [];
     this.previousState = this.state;
+    this.players = new Map();
     subscribe({ type: 'Game' }, (_: string, event: Event)=>{this.handleEvent(event);})
   }
 
   handleEvent(event: Event): G_PublicState {
+    switch (event.type) {
+      case 'ADD_PLAYER': this.addPlayer(event);
+      case 'IS_READY': this.checkForReady();
+    }
     this.machine.send(event);
     // TODO can these two lines be combined?
     this.notifyObservers();
@@ -101,6 +109,21 @@ export class Game {
         return (typeof isDone === 'undefined') ? false : isDone
       })()
     }
+  }
+
+  addPlayer(event: E_AddPlayer): void {
+    const { id, name } = event;
+    const newPlayer = new Player(id, name ? name : 'Billy Bob');
+    this.players.set(id, newPlayer);
+  }
+
+  checkForReady(): void {
+    const players = Array.from(this.players.values());
+    players.forEach(player => {
+      if (!player.isReady) { return }
+    })
+    const event: E_EndRound = { type: 'END_ROUND' }
+    this.machine.send(event)
   }
   
 }
