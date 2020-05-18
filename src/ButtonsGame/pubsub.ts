@@ -1,5 +1,5 @@
 import PubSub from 'pubsub-js';
-import type { GameEvent } from './types'
+import type { Event, Channel } from './types'
 
 /*
 
@@ -10,11 +10,6 @@ pubsub-js uses `message` and `data`.
 This wrapper uses `channel` and `event`.
 
 */
-
-
-type Channel =
-  | { type: 'Game' | 'AllPlayers' }
-  | { type: 'Player', id: number }
 
 
 function channelToMessage(channel: Channel): string {
@@ -31,7 +26,7 @@ export function subscribe(channel: Channel, callback: Function) {
 }
 
 
-export function publish(channel: Channel, event: GameEvent) {
+export function publish(channel: Channel, event: Event) {
   const message = channelToMessage(channel);
   PubSub.publishSync(message, event)
 }

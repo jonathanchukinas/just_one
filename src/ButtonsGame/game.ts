@@ -1,6 +1,6 @@
 import { Machine, interpret, assign, Interpreter } from 'xstate';
-import { subscribe } from './pubsub'
-import { GameContext, GameState, GameSchema, GameEvent } from './types'
+import { subscribe } from './pubsub';
+import { GameContext, GameState, GameSchema, GameEvent } from './types';
 
 
 const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
@@ -36,7 +36,6 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
     isLastRound: (ctx)=>ctx.round === 3,
   }
 });
-
 
 
 export class Game {

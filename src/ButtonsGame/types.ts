@@ -7,32 +7,87 @@ export type E_EndRound = {
   type: 'END_ROUND',
 }
 
+export type E_Toggle = {
+  type: 'TOGGLE'
+}
+
+// Player signals that they are ready to move 
+// to next phase.
+export type E_IsReady = {
+  type: 'IS_READY',
+  id: number,
+}
+
+// Player signals that they are not ready to move 
+// to next phase.
+export type E_IsNotReady = {
+  type: 'IS_NOT_READY',
+  id: number,
+};
+
+export type Event = 
+  | E_EndRound
+  | E_Toggle
+  | E_IsReady
+  | E_IsNotReady
+
 /************************************************
-  GAME
+  PUBSUB
+************************************************/
+
+export type Channel =
+  | { type: 'Game' | 'AllPlayers' }
+  | { type: 'Player', id: number }
+
+/************************************************
+  GAME MACHINE
 ************************************************/
 
 export type GameContext = {
   round: number;
-}
-
-export type GameState = {
-  round: number,
-  isDone: boolean,
-}
+};
 
 export type GameSchema = {
   states: {
     round: {},
     endGame: {},
   }
-}
+};
 
 export type GameEvent = E_EndRound;
+
+/************************************************
+  GAME CLASS
+************************************************/
+
+export type GameState = {
+  round: number,
+  isDone: boolean,
+}
 
 /************************************************
   PLAYER
 ************************************************/
 
+export type PlayerContext = {
+  name: string,
+  id: number,
+};
+
+export type PlayerSchema = {
+  states: {
+    incomplete: {},
+    complete: {},
+  }
+};
+
+// No specific PlayerEvent.
+
+/************************************************
+  PLAYER CLASS
+************************************************/
+
+export type PlayerState = PlayerContext;
 
 /************************************************
   Future Only
