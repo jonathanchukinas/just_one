@@ -1,19 +1,21 @@
 import { Machine, interpret, assign, Interpreter } from 'xstate';
 import { subscribe } from './pubsub';
-import {
-  GameContext,
-  GameState,
-  GameSchema,
-  GameEvent,
-  Players,
+import type {
+  G_Context,
+  G_PublicState,
+  G_Schema,
+  Event,
+  G_Player,
+  E_AddPlayer,
 } from './types';
+// import { playersMap } from './player';
 
 
-const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
+const gameMachine = Machine<G_Context, G_Schema, Event>({
   id: 'game',
   context: {
     round: 0,
-    players: new Map()
+    players: new Map(),
   },
   initial: 'round',
   states: {
@@ -37,6 +39,15 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   actions: {
     incrementRound: assign({
       round: (ctx) => ctx.round + 1
+    }),
+    addPlayer: assign({
+      players: (ctx, e) => {
+        const { players } = ctx;
+        const { id } = e as E_AddPlayer;
+        const newPlayer: G_Player = { id, isReady: false }
+        players.set(id, newPlayer);
+        return players
+      }
     })
   },
   guards: {
@@ -47,25 +58,25 @@ const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
 
 export class Game {
 
-  machine: Interpreter<GameContext, GameSchema, GameEvent>
+  machine: Interpreter<G_Context, G_Schema, Event>
   observers: Function[]
-  previousState: GameState
+  previousState: G_PublicState
   
   constructor() {
     this.machine = interpret(gameMachine).start();
     this.observers = [];
     this.previousState = this.state;
-    subscribe({ type: 'Game' }, (_: string, event: GameEvent)=>{this.handleEvent(event);})
+    subscribe({ type: 'Game' }, (_: string, event: Event)=>{this.handleEvent(event);})
   }
 
-  handleEvent(event: GameEvent): GameState {
+  handleEvent(event: Event): G_PublicState {
     this.machine.send(event);
     // TODO can these two lines be combined?
     this.notifyObservers();
     return this.state;
   }
 
-  handleMessage(_: string, event: GameEvent) {
+  handleMessage(_: string, event: Event) {
     const state = this.handleEvent(event);
     return state; 
   }
@@ -82,7 +93,7 @@ export class Game {
     }
   }
 
-  get state(): GameState {
+  get state(): G_PublicState {
     return {
       round: this.machine.state.context.round,
       isDone: (()=>{

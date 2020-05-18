@@ -1,7 +1,15 @@
 
+type PlayerID = number;
+
 /************************************************
   EVENTS
 ************************************************/
+
+export type E_AddPlayer = {
+  type: 'ADD_PLAYER',
+  id: PlayerID,
+  name?: string
+}
 
 export type E_EndRound = {
   type: 'END_ROUND',
@@ -15,17 +23,18 @@ export type E_Toggle = {
 // to next phase.
 export type E_IsReady = {
   type: 'IS_READY',
-  id: number,
+  id: PlayerID,
 }
 
 // Player signals that they are not ready to move 
 // to next phase.
 export type E_IsNotReady = {
   type: 'IS_NOT_READY',
-  id: number,
+  id: PlayerID,
 };
 
-export type Event = 
+export type Event =
+  | E_AddPlayer
   | E_EndRound
   | E_Toggle
   | E_IsReady
@@ -36,34 +45,27 @@ export type Event =
 ************************************************/
 
 export type Channel =
+  // | { type: 'Global' }
   | { type: 'Game' | 'AllPlayers' }
-  | { type: 'Player', id: number }
+  | { type: 'Player', id: PlayerID }
 
 /************************************************
   PLAYER
 ************************************************/
 
-type PlayerID = number;
-
-export type PlayerContext = {
+export type P_Context = {
   name: string,
-  id: number,
+  id: PlayerID,
 };
 
-export type PlayerSchema = {
+export type P_Schema = {
   states: {
     incomplete: {},
     complete: {},
   }
 };
 
-// No specific PlayerEvent.
-
-/************************************************
-  PLAYER CLASS
-************************************************/
-
-export interface PlayerState extends PlayerContext {
+export interface P_PublicState extends P_Context {
   isComplete: boolean,
 };
 
@@ -71,33 +73,28 @@ export interface PlayerState extends PlayerContext {
   GAME MACHINE
 ************************************************/
 
-type Player = {
+// FIXME this could be confused with the Player Class
+export type G_Player = {
   id: PlayerID,
   isReady: boolean,
   clue?: string,
 }
 
-export type Players = Map<PlayerID, Player>
+export type G_Players = Map<PlayerID, G_Player>
 
-export type GameContext = {
+export type G_Context = {
   round: number,
-  player: Players,
+  players: G_Players,
 };
 
-export type GameSchema = {
+export type G_Schema = {
   states: {
     round: {},
     endGame: {},
   }
 };
 
-export type GameEvent = E_EndRound;
-
-/************************************************
-  GAME CLASS
-************************************************/
-
-export type GameState = {
+export type G_PublicState = {
   round: number,
   isDone: boolean,
 }
