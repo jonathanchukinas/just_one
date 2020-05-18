@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { game } from './game';
 import { publish } from './pubsub';
+import { players } from './player'
+import { Button } from './Button'
 
 
 export default function ButtonsGame() {
@@ -31,6 +33,7 @@ export default function ButtonsGame() {
     <div className="m-6" >
       <h1>The Buttons Game</h1>
       { renderRound() }
+      { players.map(player => <Button player={player} />)}
     </div>
   );
 

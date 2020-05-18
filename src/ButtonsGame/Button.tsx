@@ -9,7 +9,7 @@ import type {
 
 type Props = { player: Player }
 
-export default function Button(props: Props) {
+export function Button(props: Props) {
   
   const { player } = props;
   const [playerState, setPlayerState] = useState(player.state);
@@ -17,7 +17,7 @@ export default function Button(props: Props) {
 
   useEffect(()=>{
     player.registerObserver(setPlayerState);
-  },[])
+  },[player])
 
   function toggle() {
     const channel: Channel = { type: "Player", id }
@@ -39,7 +39,7 @@ export default function Button(props: Props) {
   const buttonCss = `w-56 font-bold py-2 px-4 rounded-full ${cssBgColor} ${cssTextColor} ${cssHoverColor} ${cssBorder} ${cssNotSelf}`
   
   return (<div className="mt-6" >
-    <button className={buttonCss} onClick={ toggle } >{ name }</button>
+    <button className={ buttonCss } onClick={ toggle } >{ name }</button>
   </div>);
 
 }

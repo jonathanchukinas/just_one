@@ -1,4 +1,4 @@
-import { Machine, interpret, Interpreter, MachineConfig } from 'xstate';
+import { Machine, interpret, Interpreter } from 'xstate';
 import { subscribe, publish } from './pubsub'
 import { 
   PlayerContext,
@@ -69,7 +69,13 @@ export class Player {
     this.machine = interpret(machine).start();
     this.observers = [];
     this.previousState = this.state;
-    subscribe({ type: 'Game' }, (_: string, event: Event)=>{this.handleMessage(event);})
+    const subscribedChannels: Channel[] = [
+      { type: 'Player', id },
+      { type: 'AllPlayers' },
+    ]
+    subscribedChannels.forEach(channel=>{
+      subscribe(channel, (_: string, event: Event)=>{this.handleMessage(event);})
+    });
   }
 
   handleMessage(event: Event) {
@@ -103,7 +109,7 @@ export class Player {
 }
 
 
-export const player: Player[] = [
+export const players: Player[] = [
   new Player(1, 'Mary'),
   new Player(2, 'Jimmy'),
 ]
