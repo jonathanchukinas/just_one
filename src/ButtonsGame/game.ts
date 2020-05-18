@@ -1,12 +1,19 @@
 import { Machine, interpret, assign, Interpreter } from 'xstate';
 import { subscribe } from './pubsub';
-import { GameContext, GameState, GameSchema, GameEvent } from './types';
+import {
+  GameContext,
+  GameState,
+  GameSchema,
+  GameEvent,
+  Players,
+} from './types';
 
 
 const gameMachine = Machine<GameContext, GameSchema, GameEvent>({
   id: 'game',
   context: {
-    round: 0
+    round: 0,
+    players: new Map()
   },
   initial: 'round',
   states: {

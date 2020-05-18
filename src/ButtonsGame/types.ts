@@ -40,34 +40,10 @@ export type Channel =
   | { type: 'Player', id: number }
 
 /************************************************
-  GAME MACHINE
-************************************************/
-
-export type GameContext = {
-  round: number;
-};
-
-export type GameSchema = {
-  states: {
-    round: {},
-    endGame: {},
-  }
-};
-
-export type GameEvent = E_EndRound;
-
-/************************************************
-  GAME CLASS
-************************************************/
-
-export type GameState = {
-  round: number,
-  isDone: boolean,
-}
-
-/************************************************
   PLAYER
 ************************************************/
+
+type PlayerID = number;
 
 export type PlayerContext = {
   name: string,
@@ -90,6 +66,41 @@ export type PlayerSchema = {
 export interface PlayerState extends PlayerContext {
   isComplete: boolean,
 };
+
+/************************************************
+  GAME MACHINE
+************************************************/
+
+type Player = {
+  id: PlayerID,
+  isReady: boolean,
+  clue?: string,
+}
+
+export type Players = Map<PlayerID, Player>
+
+export type GameContext = {
+  round: number,
+  player: Players,
+};
+
+export type GameSchema = {
+  states: {
+    round: {},
+    endGame: {},
+  }
+};
+
+export type GameEvent = E_EndRound;
+
+/************************************************
+  GAME CLASS
+************************************************/
+
+export type GameState = {
+  round: number,
+  isDone: boolean,
+}
 
 /************************************************
   Future Only
