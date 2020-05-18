@@ -87,7 +87,9 @@ export type PlayerSchema = {
   PLAYER CLASS
 ************************************************/
 
-export type PlayerState = PlayerContext;
+export interface PlayerState extends PlayerContext {
+  isComplete: boolean,
+};
 
 /************************************************
   Future Only

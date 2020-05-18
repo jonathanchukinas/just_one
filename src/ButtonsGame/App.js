@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { game } from './game';
-import { publish } from './pubsub'
+import { publish } from './pubsub';
 
 
 export default function ButtonsGame() {

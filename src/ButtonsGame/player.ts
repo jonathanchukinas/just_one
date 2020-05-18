@@ -2,11 +2,11 @@ import { Machine, interpret, Interpreter, MachineConfig } from 'xstate';
 import { subscribe, publish } from './pubsub'
 import { 
   PlayerContext,
-  Channel,
   PlayerSchema,
   PlayerState,
   E_IsReady,
   E_IsNotReady,
+  Channel,
 } from './types';
 
 
@@ -58,7 +58,7 @@ function playerMachineFactory(id: number, name: string) {
 }
 
 
-class Player {
+export class Player {
 
   machine: Interpreter<PlayerContext, PlayerSchema, Event>
   observers: Function[]
@@ -92,7 +92,12 @@ class Player {
   }
 
   get state(): PlayerState {
-    return this.machine.state.context;
+    const machineState = this.machine.state;
+    const state = {
+      ...machineState.context,
+      isComplete: (machineState.value === 'complete'),
+    };
+    return state;
   }
 
 }
