@@ -12,7 +12,9 @@ type Props = { playerState: P_PublicState }
 
 export function Button(props: Props) {
   
+  // FIXME deconstruct this above?
   const { playerState } = props;
+  console.log(playerState, props)
   const { id, name, isReady } = playerState;
 
   function toggle() {

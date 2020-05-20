@@ -71,7 +71,7 @@ export interface P_PublicState extends P_Context {
 };
 
 /************************************************
-  GAME MACHINE
+  GAME
 ************************************************/
 
 // FIXME this could be confused with the Player Class

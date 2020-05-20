@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { game } from './game';
 import { publish } from './pubsub';
-// import { Button } from './Button'
+import { Button } from './Button'
 
 
 export default function ButtonsGame() {
 
   const [gameState, setGameState] = useState(game.state)
+  const { round, isDone, playerState } = gameState;
 
   useEffect(()=>{
     game.registerObserver(setGameState);
@@ -19,11 +20,11 @@ export default function ButtonsGame() {
   }
 
   function renderRound() {
-    if (gameState.isDone) {
+    if (isDone) {
       return <p>Game over!</p>
     }
     return <>
-      <p>Round Number: {gameState.round}</p>
+      <p>Round Number: {round}</p>
       <button onClick={nextRound}>Next Round</button>
     </>
   }
@@ -34,7 +35,7 @@ export default function ButtonsGame() {
     <div className="m-6" >
       <h1>The Buttons Game</h1>
       { renderRound() }
-      {/* { players.map(player => <Button player={player} />)} */}
+      { playerState.map(player => <Button key={ player.id } playerState={ player } />)}
     </div>
   );
 
