@@ -67,7 +67,7 @@ export type P_Schema = {
 };
 
 export interface P_PublicState extends P_Context {
-  isComplete: boolean,
+  isReady: boolean,
 };
 
 /************************************************
@@ -98,6 +98,7 @@ export type G_Schema = {
 export type G_PublicState = {
   round: number,
   isDone: boolean,
+  playerState: P_PublicState[],
 }
 
 /************************************************

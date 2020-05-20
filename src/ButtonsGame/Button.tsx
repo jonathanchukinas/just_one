@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import type { Player } from './player'
+import React from 'react';
 import { publish } from './pubsub';
 import type {
   Channel,
   Event,
+  P_PublicState,
 } from './types'
 
 
-type Props = { player: Player }
+// FIXME inline this type?
+type Props = { playerState: P_PublicState }
 
 export function Button(props: Props) {
   
-  const { player } = props;
-  const [playerState, setPlayerState] = useState(player.state);
-  const { id, name, isComplete } = playerState;
-
-  useEffect(()=>{
-    player.registerObserver(setPlayerState);
-  },[player])
+  const { playerState } = props;
+  const { id, name, isReady } = playerState;
 
   function toggle() {
     const channel: Channel = { type: "Player", id }
@@ -25,7 +21,7 @@ export function Button(props: Props) {
     publish(channel, event);
   }
 
-  const buttonColor = isComplete ? 'green' : 'red';
+  const buttonColor = isReady ? 'green' : 'red';
 
 
   const buttonSaturation = { bg: 400, text: 900 };

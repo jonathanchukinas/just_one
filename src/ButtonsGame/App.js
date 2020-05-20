@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { game } from './game';
 import { publish } from './pubsub';
-// import { players } from './player'
-import { Button } from './Button'
+// import { Button } from './Button'
 
 
 export default function ButtonsGame() {
@@ -28,6 +27,8 @@ export default function ButtonsGame() {
       <button onClick={nextRound}>Next Round</button>
     </>
   }
+
+  
   
   return (
     <div className="m-6" >

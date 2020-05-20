@@ -6,9 +6,7 @@ import type {
   Event,
   P_PublicState,
   E_IsReady,
-  E_IsNotReady,
   Channel,
-  G_Players,
 } from './types';
 
 
@@ -52,10 +50,10 @@ function playerMachineFactory(id: number, name: string) {
       },
     }
   },{
-    // actions: {
-    //   sendIsReady,
-    //   sendIsNotReady,
-    // }
+    actions: {
+      sendIsReady,
+      // sendIsNotReady,
+    }
   })
   return playerMachine
 }
@@ -89,7 +87,9 @@ export class Player {
   }
 
   registerObserver(observer: Function): void {
-    this.observers.push(observer)
+    // FIXME maybe only allow one observer?
+    this.observers.push(observer);
+    this.notifyObservers();
   }
 
   notifyObservers(): void {
@@ -104,31 +104,9 @@ export class Player {
     const machineState = this.machine.state;
     const state = {
       ...machineState.context,
-      isComplete: (machineState.value === 'complete'),
+      isReady: this.machine.state.matches('complete'),
     };
     return state;
   }
 
-  get isReady(): boolean {
-    return this.machine.state.matches('complete');
-  }
-
 }
-
-
-// const players: Player[] = [
-//   new Player(1, 'Mary'),
-//   new Player(2, 'Jimmy'),
-// ]
-
-// const playersMap: G_Players = new Map();
-// players.forEach(player => {
-//   const id = player.state.id;
-//   const player_ = {
-//     id,
-//     isReady: false,    
-//   }
-//   playersMap.set(player.state.id, player_)
-// })
-
-// export { players, playersMap }

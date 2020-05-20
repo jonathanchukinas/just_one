@@ -9,6 +9,7 @@ import type {
   E_AddPlayer,
   PlayerID,
   E_EndRound,
+  P_PublicState,
 } from './types';
 import { Player } from './player';
 
@@ -17,6 +18,7 @@ const gameMachine = Machine<G_Context, G_Schema, Event>({
   id: 'game',
   context: {
     round: 0,
+    // FIXME remove this
     players: new Map(),
   },
   initial: 'round',
@@ -42,6 +44,7 @@ const gameMachine = Machine<G_Context, G_Schema, Event>({
     incrementRound: assign({
       round: (ctx) => ctx.round + 1
     }),
+    // FIXME remove this
     addPlayer: assign({
       players: (ctx, e) => {
         const { players } = ctx;
@@ -63,25 +66,38 @@ export class Game {
   machine: Interpreter<G_Context, G_Schema, Event>
   observers: Function[]
   previousState: G_PublicState
-  players: Map<PlayerID, Player>
+  playerStates: P_PublicState[]
   
   constructor() {
     this.machine = interpret(gameMachine).start();
     this.observers = [];
     this.previousState = this.state;
-    this.players = new Map();
+    this.playerStates = [];
+    this.addPlayer({
+      type: 'ADD_PLAYER',
+      id: 1,
+      name: 'Mary'
+    })
+    this.addPlayer({
+      type: 'ADD_PLAYER',
+      id: 2,
+      name: 'Jake'
+    })
     subscribe({ type: 'Game' }, (_: string, event: Event)=>{this.handleEvent(event);})
   }
 
-  handleEvent(event: Event): G_PublicState {
+  handleEvent(event: Event) {
     switch (event.type) {
-      case 'ADD_PLAYER': this.addPlayer(event);
-      case 'IS_READY': this.checkForReady();
+      case 'ADD_PLAYER': 
+        this.addPlayer(event);
+        break;
+      case 'IS_READY':
+        this.checkForReady();
+        break;
     }
     this.machine.send(event);
     // TODO can these two lines be combined?
     this.notifyObservers();
-    return this.state;
   }
 
   handleMessage(_: string, event: Event) {
@@ -90,7 +106,9 @@ export class Game {
   }
 
   registerObserver(observer: Function): void {
-    this.observers.push(observer)
+    // FIXME code duplication. Inheritance?
+    this.observers.push(observer);
+    this.notifyObservers();
   }
 
   notifyObservers(): void {
@@ -98,32 +116,50 @@ export class Game {
     if (newState !== this.previousState) {
       this.observers.forEach(observerCallback => { observerCallback(newState) });
       this.previousState = newState;
+      console.log('game state change!', newState)
     }
   }
 
   get state(): G_PublicState {
-    return {
+    return {      
       round: this.machine.state.context.round,
       isDone: (()=>{
         const isDone = this.machine.state.done;
         return (typeof isDone === 'undefined') ? false : isDone
-      })()
+      })(),
+      playerState: this.playerStates,
     }
   }
 
   addPlayer(event: E_AddPlayer): void {
     const { id, name } = event;
+    const playerObserver = this.getPlayerObserver(id);
     const newPlayer = new Player(id, name ? name : 'Billy Bob');
-    this.players.set(id, newPlayer);
+    newPlayer.registerObserver(playerObserver);
   }
 
   checkForReady(): void {
-    const players = Array.from(this.players.values());
-    players.forEach(player => {
-      if (!player.isReady) { return }
+    const playerPublicStates = Array.from(this.playerStates.values());
+    playerPublicStates.forEach(playerPublicState => {
+      if (!playerPublicState.isReady) { return }
     })
     const event: E_EndRound = { type: 'END_ROUND' }
     this.machine.send(event)
+  }
+
+  // FIXME how to set this private?
+  getPlayerObserver(id: PlayerID): (playerState: P_PublicState)=>void {
+    const playerIndex: number = id - 1;
+    // FIXME do I need this intermediate var?
+    const game = this;
+    const playerStates = this.playerStates;
+    // const notify = this.notifyObservers;
+    function playerObserver(playerState: P_PublicState) {
+      playerStates[playerIndex] = playerState;
+      // notify();
+      game.notifyObservers();
+    };
+    return playerObserver;
   }
   
 }

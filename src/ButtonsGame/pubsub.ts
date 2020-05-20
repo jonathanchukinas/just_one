@@ -27,6 +27,7 @@ export function subscribe(channel: Channel, callback: Function) {
 
 
 export function publish(channel: Channel, event: Event) {
+  console.log('Publish! channel:', channel, 'event:', event)
   const message = channelToMessage(channel);
   PubSub.publishSync(message, event)
 }
