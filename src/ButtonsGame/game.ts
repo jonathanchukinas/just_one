@@ -1,14 +1,15 @@
 import { Machine, interpret, assign, Interpreter } from 'xstate';
-import { subscribe } from './pubsub';
+import { subscribe, publish } from './pubsub';
 import type {
+  PlayerID,
+  E_AddPlayer,
+  E_EndRound,
+  Event,
+  Channel,
   G_Context,
   G_PublicState,
   G_Schema,
-  Event,
   G_Player,
-  E_AddPlayer,
-  PlayerID,
-  E_EndRound,
   P_PublicState,
 } from './types';
 import { Player } from './player';
@@ -91,9 +92,9 @@ export class Game {
       case 'ADD_PLAYER': 
         this.addPlayer(event);
         break;
-      case 'IS_READY':
-        this.checkForReady();
-        break;
+      // case 'IS_READY':
+      //   this.checkForReady();
+      //   break;
     }
     this.machine.send(event);
     // TODO can these two lines be combined?
@@ -115,8 +116,9 @@ export class Game {
     const newState = this.state;
     if (newState !== this.previousState) {
       this.observers.forEach(observerCallback => { observerCallback(newState) });
+      console.log('prevState:', this.previousState)
       this.previousState = newState;
-      console.log('game state change!', newState)
+      console.log('newState:', newState)
     }
   }
 
@@ -139,12 +141,20 @@ export class Game {
   }
 
   checkForReady(): void {
-    const playerPublicStates = Array.from(this.playerStates.values());
-    playerPublicStates.forEach(playerPublicState => {
-      if (!playerPublicState.isReady) { return }
-    })
-    const event: E_EndRound = { type: 'END_ROUND' }
+    console.log('Checking for ready');
+    console.log(this.state.playerState);
+    for (let pIndex = 0; pIndex < this.state.playerState.length; pIndex++) {
+      const playerState = this.state.playerState[pIndex]
+      if (!playerState.isReady) { 
+        console.log('Not ready', playerState.isReady)
+        return;
+      }
+    };
+    console.log('Ready')
+    // const channel: Channel = { type: 'Game' };
+    const event: E_EndRound = { type: 'END_ROUND' };
     this.machine.send(event)
+    // publish(channel, event);
   }
 
   // FIXME how to set this private?
@@ -156,7 +166,7 @@ export class Game {
     // const notify = this.notifyObservers;
     function playerObserver(playerState: P_PublicState) {
       playerStates[playerIndex] = playerState;
-      // notify();
+      game.checkForReady();
       game.notifyObservers();
     };
     return playerObserver;
