@@ -1,11 +1,10 @@
 import { Machine, interpret, Interpreter } from 'xstate';
-import { subscribe, publish } from './pubsub'
+import { subscribe } from './pubsub'
 import type { 
   P_Context,
   P_Schema,
   Event,
   P_PublicState,
-  E_IsReady,
   Channel,
 } from './types';
 // FIXME reduce import size?
@@ -41,24 +40,14 @@ function playerMachineFactory(id: number, name: string) {
         },
         // entry: 'sendIsReady',
       },
+    },
+    on: {
+      RESET: '.incomplete'
     }
-  },{
-    // actions: {
-    //   sendIsReady,
-    // }
   })
   return playerMachine
 }
 
-
-/**
- * pseudocode
- * player rcvs TOGGLE event
- * player machine processes it
- * player notifies observer
- * observer (game) checks for all done
- * game advances turn if all done.
- */
 
 
 export class Player {
@@ -83,8 +72,10 @@ export class Player {
 
   handleMessage(event: Event) {
     // FIXME repeat this pattern in the game
+    console.log('Player', this.machine.state.context.id, 'Before:', event, this.state)
     this.machine.send(event);
-    this.notifyObservers();
+    this.notifyObservers(true);
+    console.log('Player', this.machine.state.context.id, 'After:', event, this.state)
   }
 
   registerObserver(observer: Function): void {

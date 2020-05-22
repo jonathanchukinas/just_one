@@ -4,12 +4,12 @@ import type {
   PlayerID,
   E_AddPlayer,
   E_EndRound,
+  E_Reset,
   Event,
   Channel,
   G_Context,
   G_PublicState,
   G_Schema,
-  G_Player,
   P_PublicState,
 } from './types';
 import { Player } from './player';
@@ -19,8 +19,6 @@ const gameMachine = Machine<G_Context, G_Schema, Event>({
   id: 'game',
   context: {
     round: 0,
-    // FIXME remove this
-    players: new Map(),
   },
   initial: 'round',
   states: {
@@ -33,6 +31,7 @@ const gameMachine = Machine<G_Context, G_Schema, Event>({
         },{
           target: 'round',
           internal: false,
+          actions: 'reset',
         }]
       }
     },
@@ -45,16 +44,11 @@ const gameMachine = Machine<G_Context, G_Schema, Event>({
     incrementRound: assign({
       round: (ctx) => ctx.round + 1
     }),
-    // FIXME remove this
-    addPlayer: assign({
-      players: (ctx, e) => {
-        const { players } = ctx;
-        const { id } = e as E_AddPlayer;
-        const newPlayer: G_Player = { id, isReady: false }
-        players.set(id, newPlayer);
-        return players
-      }
-    })
+    reset: ()=>{
+      const channel: Channel = { type: 'AllPlayers' };
+      const event: E_Reset = { type: 'RESET' };
+      publish(channel, event);
+    }
   },
   guards: {
     isLastRound: (ctx)=>ctx.round === 3,
@@ -83,6 +77,16 @@ export class Game {
       type: 'ADD_PLAYER',
       id: 2,
       name: 'Jake'
+    })
+    this.addPlayer({
+      type: 'ADD_PLAYER',
+      id: 3,
+      name: 'Nick'
+    })
+    this.addPlayer({
+      type: 'ADD_PLAYER',
+      id: 4,
+      name: 'James'
     })
     subscribe({ type: 'Game' }, (_: string, event: Event)=>{this.handleEvent(event);})
   }
@@ -116,9 +120,9 @@ export class Game {
     const newState = this.state;
     if (newState !== this.previousState) {
       this.observers.forEach(observerCallback => { observerCallback(newState) });
-      console.log('prevState:', this.previousState)
+      // console.log('prevState:', this.previousState)
       this.previousState = newState;
-      console.log('newState:', newState)
+      // console.log('newState:', newState)
     }
   }
 
@@ -141,16 +145,16 @@ export class Game {
   }
 
   checkForReady(): void {
-    console.log('Checking for ready');
-    console.log(this.state.playerState);
+    // console.log('Checking for ready');
+    // console.log(this.state.playerState);
     for (let pIndex = 0; pIndex < this.state.playerState.length; pIndex++) {
       const playerState = this.state.playerState[pIndex]
       if (!playerState.isReady) { 
-        console.log('Not ready', playerState.isReady)
+        // console.log('Not ready', playerState.isReady)
         return;
       }
     };
-    console.log('Ready')
+    // console.log('Ready')
     // const channel: Channel = { type: 'Game' };
     const event: E_EndRound = { type: 'END_ROUND' };
     this.machine.send(event)

@@ -19,27 +19,16 @@ export type E_Toggle = {
   type: 'TOGGLE'
 }
 
-// Player signals that they are ready to move 
-// to next phase.
-export type E_IsReady = {
-  type: 'IS_READY',
-  // FIXME this may not be needed:
-  id: PlayerID,
+export type E_Reset = {
+  type: 'RESET'
 }
 
-// Player signals that they are not ready to move 
-// to next phase.
-export type E_IsNotReady = {
-  type: 'IS_NOT_READY',
-  id: PlayerID,
-};
 
 export type Event =
   | E_AddPlayer
   | E_EndRound
   | E_Toggle
-  | E_IsReady
-  | E_IsNotReady
+  | E_Reset
 
 /************************************************
   PUBSUB
@@ -74,7 +63,6 @@ export interface P_PublicState extends P_Context {
   GAME
 ************************************************/
 
-// FIXME this could be confused with the Player Class
 export type G_Player = {
   id: PlayerID,
   isReady: boolean,
@@ -85,7 +73,6 @@ export type G_Players = Map<PlayerID, G_Player>
 
 export type G_Context = {
   round: number,
-  players: G_Players,
 };
 
 export type G_Schema = {
