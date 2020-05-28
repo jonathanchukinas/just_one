@@ -31,9 +31,11 @@ export default function App() {
     navLinks[0].page
   );
   
-  return (<>
-    <NavBar buttons={navLinks} setCurrentPage={setCurrentPage}/>
-    {currentPage}
-  </>);
+  return (<div className='h-screen flex flex-col'>
+    <NavBar className='flex-none' buttons={navLinks} setCurrentPage={setCurrentPage}/>
+    <div className='flex-grow bg-green-500'>
+      {currentPage}
+    </div>
+  </div>);
 
 }
