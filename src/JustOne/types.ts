@@ -1,6 +1,6 @@
 
 export type PlayerId = number;
-
+export type TurnNum = number;
 export type Uuid = string;
 
 /************************************************
@@ -75,6 +75,9 @@ export type Event =
   | SubmittedGuess
   | RejectedGuess
   | SkippedGuess
+
+export type EventSender = (event: Event) => void;
+export type TurnGetter = () => TurnNum;
 
 /************************************************
   PUBSUB

@@ -12,6 +12,7 @@
     "@types/pubsub-js": "^1.8.0",
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.7",
+    "@types/uuid": "^8.0.0",
     "@xstate/react": "^0.8.1",
     "lodash": "^4.17.15",
     "pubsub-js": "^1.8.0",

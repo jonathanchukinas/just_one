@@ -3,31 +3,36 @@ import {
   Event,
   Uuid,
   BaseEvent,
+  EventSender,
+  TurnGetter,
 } from './types'
 import { v4 as generateUuid } from 'uuid';
 
 
-type EventEmitter = (event: Event) => void;
-
-
 export class EventGenerator {
 
-  private eventEmitter: EventEmitter
-  private gameUuid: Uuid
-  private playerId: PlayerId
+  private _eventEmitter: EventSender
+  private _gameUuid: Uuid
+  private _playerId: PlayerId
+  private _turnNum: TurnGetter
 
-  constructor(eventEmitter: EventEmitter, gameUuid: Uuid,  playerId: PlayerId) {
-    this.eventEmitter = eventEmitter;
-    this.gameUuid = gameUuid;
-    this.playerId = playerId;
+  constructor(
+    eventSender: EventSender, 
+    gameUuid: Uuid,
+    playerId: PlayerId,
+    turnGetter: TurnGetter
+  ) {
+    this._eventEmitter = eventSender;
+    this._gameUuid = gameUuid;
+    this._playerId = playerId;
+    this._turnNum = turnGetter;
   }
-
 
   private getBaseEvent(): BaseEvent {
     return {
-      playerId: this.playerId,
+      playerId: this._playerId,
       eventUuid: generateUuid(),
-      gameUuid: this.gameUuid,
+      gameUuid: this._gameUuid,
     }
   }
 
@@ -36,55 +41,55 @@ export class EventGenerator {
       type: 'StartedGame',
       ...this.getBaseEvent(),
     }
-    this.eventEmitter(event)
+    this._eventEmitter(event)
   }
 
-  submitClue(turnNum: number, clue: string) {
+  submitClue(clue: string) {
     const event: Event = {
       type: 'SubmittedClue',
-      turnNum,
+      turnNum: this._turnNum(),
       clue,
       ...this.getBaseEvent(),
     }
-    this.eventEmitter(event)
+    this._eventEmitter(event)
   }
 
-  rejectDuplicates(turnNum: number, duplicates: string[]) {
+  rejectDuplicates(duplicates: string[]) {
     const event: Event = {
       type: 'RejectedDuplicates',
-      turnNum,
+      turnNum: this._turnNum(),
       duplicates,
       ...this.getBaseEvent(),
     }
-    this.eventEmitter(event)
+    this._eventEmitter(event)
   }
 
-  submitGuess(turnNum: number, guess: string) {
+  submitGuess(guess: string) {
     const event: Event = {
       type: 'SubmittedGuess',
-      turnNum,
+      turnNum: this._turnNum(),
       guess,
       ...this.getBaseEvent(),
     }
-    this.eventEmitter(event)
+    this._eventEmitter(event)
   }
 
-  rejectGuess(turnNum: number) {
+  rejectGuess() {
     const event: Event = {
       type: 'RejectedGuess',
-      turnNum,
+      turnNum: this._turnNum(),
       ...this.getBaseEvent(),
     }
-    this.eventEmitter(event)
+    this._eventEmitter(event)
   }
 
-  skipGuess(turnNum: number) {
+  skipGuess() {
     const event: Event = {
       type: 'SkippedGuess',
-      turnNum,
+      turnNum: this._turnNum(),
       ...this.getBaseEvent(),
     }
-    this.eventEmitter(event)
+    this._eventEmitter(event)
   }
 
 
