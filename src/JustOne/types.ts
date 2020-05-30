@@ -58,6 +58,10 @@ export interface SubmittedGuess extends BaseEvent, TurnEvent {
   guess: string;
 }
 
+export interface AcceptedGuess extends BaseEvent, TurnEvent {
+  type: 'AcceptedGuess';
+}
+
 export interface RejectedGuess extends BaseEvent, TurnEvent {
   type: 'RejectedGuess';
 }
@@ -73,8 +77,10 @@ export type Event =
   | SubmittedClue
   | RejectedDuplicates
   | SubmittedGuess
+  | AcceptedGuess
   | RejectedGuess
   | SkippedGuess
+  | {type: ''}
 
 export type EventSender = (event: Event) => void;
 export type TurnGetter = () => TurnNum;
@@ -145,3 +151,19 @@ export type G_PublicState = {
   cards: CardState[],
 }
 
+export interface GameSchema {
+  states: {
+    signIn: {};
+    awaitingStartGame: {};
+    startGame: {};
+    startTurn: {};
+    clues: {};
+    duplicates: {};
+    guess: {};
+    judge: {};
+    endTurn: {};
+    endGame: {};
+  }
+}
+
+export interface GameContext {}
