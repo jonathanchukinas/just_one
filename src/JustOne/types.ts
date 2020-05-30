@@ -80,7 +80,7 @@ export type Event =
   | AcceptedGuess
   | RejectedGuess
   | SkippedGuess
-  | {type: ''}
+  // | {type: ''}
 
 export type EventSender = (event: Event) => void;
 export type TurnGetter = () => TurnNum;
@@ -111,6 +111,30 @@ export type T_Card = {
   word: string,
   status: CardState,
   turn?: number,
+}
+
+/************************************************
+  PLAYER
+************************************************/
+
+interface Player {
+  id: number,
+  name: string,
+}
+
+/************************************************
+  CLUE
+************************************************/
+
+enum ClueStatus {
+  Active,
+  Rejected,
+}
+
+interface Clue {
+  value: string,
+  status: ClueStatus,
+  turnNum: number,
 }
 
 /************************************************
@@ -158,6 +182,7 @@ export interface GameSchema {
     startGame: {};
     startTurn: {};
     clues: {};
+    checkCluesComplete: {};
     duplicates: {};
     guess: {};
     judge: {};
@@ -166,4 +191,8 @@ export interface GameSchema {
   }
 }
 
-export interface GameContext {}
+export interface GameContext {
+  turnNum: number,
+  clues: Clue[],
+  players: Player[],
+}

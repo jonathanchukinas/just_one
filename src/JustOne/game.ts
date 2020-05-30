@@ -8,11 +8,11 @@ import {
   AddedPlayer,
   GameContext,
   GameSchema,
+  StartedGame,
 } from './types';
 import { ActionsGenerator } from './actions'
 import { Player } from './player'
 import { Machine, MachineConfig, interpret, Interpreter } from 'xstate'
-import { game } from '../ButtonsGame/game';
 
 
 function eventEmitter(event: Event): void {
@@ -27,7 +27,7 @@ const nullObserver = (event: Event) => {}
 
 
 
-const gameMachineConfig: MachineConfig<GameContext, GameSchema, Event> = {
+const gameMachine = Machine<GameContext, GameSchema, Event>({
   id: 'game',
   initial: "signIn",
   states: {
@@ -53,7 +53,22 @@ const gameMachineConfig: MachineConfig<GameContext, GameSchema, Event> = {
     },
     clues: {
       on: {
-        SubmittedClue: 'duplicates'
+        SubmittedClue: {
+          target: 'checkCluesComplete',
+          cond: 'tsra'
+        }
+      }
+    },
+    checkCluesComplete: {
+      on: {
+        '': [
+          {
+            target: 'duplicates',
+            cond: 'areCluesComplete'
+          },{
+            target: 'clues'
+          }
+        ]
       }
     },
     duplicates: {
@@ -85,7 +100,7 @@ const gameMachineConfig: MachineConfig<GameContext, GameSchema, Event> = {
       type: 'final'
     }
   }
-}
+})
 
 
 
@@ -100,8 +115,8 @@ export class Game {
   private _playerId: PlayerId
   private _observer: Observer
   private _actions: ActionsGenerator
-  private _players: Player[]
-  private eventHandlers: Object
+  private players: Player[]
+  private eventHandlers: {[key: string]: Function}
   private service: Interpreter<GameContext, GameSchema, Event>
 
   constructor() {
@@ -110,12 +125,14 @@ export class Game {
     this._playerId = 1;
     this._observer = nullObserver;
     this._actions = new ActionsGenerator(eventEmitter, this._gameUuid, this._playerId, this.turnGetter)
-    this._players = [];
+    this.players = [];
     this.eventHandlers = {
-      'AddedPlayer': this.handleAddPlayer,
+      'AddedPlayer': this.sendToMachine,
+      'StartedGame': this.sendToMachine,
+      'SubmittedClue': this.sendToMachine,
     }
-    const machine = Machine(gameMachineConfig)
-    this.service = interpret(machine).start();
+    // const machine = Machine(gameMachineConfig)
+    this.service = interpret(gameMachine).start();
   }
 
   public get state(): string {
@@ -141,12 +158,20 @@ export class Game {
   }
 
   public handleEvent(event: Event) {
-
+    const eventHandler = this.eventHandlers[event.type]
+    if (typeof eventHandler === 'undefined') {
+      throw new Error(`There is no event handler for ${event.type} yet!`)
+    }
+    eventHandler.call(this, event)
   }
 
   private handleAddPlayer(event: AddedPlayer) {
     const newPlayer = new Player(event.playerId, event.playerName);
-    this._players.push(newPlayer);
+    this.players.push(newPlayer);
+    this.sendToMachine(event)
+  }
+
+  private sendToMachine(event: Event) {
     this.service.send(event)
   }
 

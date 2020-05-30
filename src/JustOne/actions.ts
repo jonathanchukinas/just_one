@@ -11,7 +11,7 @@ import { v4 as generateUuid } from 'uuid';
 
 export class ActionsGenerator {
 
-  private _eventSender: EventSender
+  private eventSender: EventSender
   private _gameUuid: Uuid
   private _playerId: PlayerId
   private _turnNum: TurnGetter
@@ -22,7 +22,7 @@ export class ActionsGenerator {
     playerId: PlayerId,
     turnGetter: TurnGetter
   ) {
-    this._eventSender = eventSender;
+    this.eventSender = eventSender;
     this._gameUuid = gameUuid;
     this._playerId = playerId;
     this._turnNum = turnGetter;
@@ -36,12 +36,22 @@ export class ActionsGenerator {
     }
   }
 
+  addPlayer(playerName: string) {
+    const event: Event = {
+      type: 'AddedPlayer',
+      playerName,
+      ...this.getBaseEvent(),
+    }
+    console.log('calling addPlayer')
+    this.eventSender(event)
+  }
+
   startGame() {
     const event: Event = {
       type: 'StartedGame',
       ...this.getBaseEvent(),
     }
-    this._eventSender(event)
+    this.eventSender(event)
   }
 
   submitClue(clue: string) {
@@ -51,7 +61,7 @@ export class ActionsGenerator {
       clue,
       ...this.getBaseEvent(),
     }
-    this._eventSender(event)
+    this.eventSender(event)
   }
 
   rejectDuplicates(duplicates: string[]) {
@@ -61,7 +71,7 @@ export class ActionsGenerator {
       duplicates,
       ...this.getBaseEvent(),
     }
-    this._eventSender(event)
+    this.eventSender(event)
   }
 
   submitGuess(guess: string) {
@@ -71,7 +81,7 @@ export class ActionsGenerator {
       guess,
       ...this.getBaseEvent(),
     }
-    this._eventSender(event)
+    this.eventSender(event)
   }
 
   rejectGuess() {
@@ -80,7 +90,7 @@ export class ActionsGenerator {
       turnNum: this._turnNum(),
       ...this.getBaseEvent(),
     }
-    this._eventSender(event)
+    this.eventSender(event)
   }
 
   skipGuess() {
@@ -89,7 +99,7 @@ export class ActionsGenerator {
       turnNum: this._turnNum(),
       ...this.getBaseEvent(),
     }
-    this._eventSender(event)
+    this.eventSender(event)
   }
 
 
