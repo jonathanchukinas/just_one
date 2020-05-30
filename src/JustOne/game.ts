@@ -7,7 +7,7 @@ import {
   TurnGetter,
   AddedPlayer,
   GameContext,
-  GameSchema,
+  Phase,
   StartedGame,
 } from './types';
 import { ActionsGenerator } from './actions'
@@ -27,86 +27,6 @@ const nullObserver = (event: Event) => {}
 
 
 
-const gameMachine = Machine<GameContext, GameSchema, Event>({
-  id: 'game',
-  initial: "signIn",
-  states: {
-    signIn: {
-      on: {
-        AddedPlayer: 'awaitingStartGame',
-      }
-    },
-    awaitingStartGame: {
-      on: {
-        StartedGame: 'startGame'
-      }
-    },
-    startGame: {
-      on: {
-        '': 'startTurn'
-      }
-    },
-    startTurn: {
-      on: {
-        '': 'clues'
-      }
-    },
-    clues: {
-      on: {
-        SubmittedClue: {
-          target: 'checkCluesComplete',
-          cond: 'tsra'
-        }
-      }
-    },
-    checkCluesComplete: {
-      on: {
-        '': [
-          {
-            target: 'duplicates',
-            cond: 'areCluesComplete'
-          },{
-            target: 'clues'
-          }
-        ]
-      }
-    },
-    duplicates: {
-      on: {
-        RejectedDuplicates: 'guess'
-      }
-    },
-    guess: {
-      on: {
-        SubmittedGuess: 'judge',
-        SkippedGuess: 'endTurn',
-      }
-    },
-    judge: {
-      on: {
-        RejectedGuess: 'endTurn',
-        AcceptedGuess: 'endTurn',
-      }
-    },
-    endTurn: {
-      on: {
-        '': [
-          'endGame',
-          'startTurn',
-        ]
-      }
-    },
-    endGame: {
-      type: 'final'
-    }
-  }
-})
-
-
-
-
-
-
 
 export class Game {
 
@@ -117,7 +37,7 @@ export class Game {
   private _actions: ActionsGenerator
   private players: Player[]
   private eventHandlers: {[key: string]: Function}
-  private service: Interpreter<GameContext, GameSchema, Event>
+  readonly phase: Phase
 
   constructor() {
     this._eventSender = eventEmitter;
@@ -127,23 +47,16 @@ export class Game {
     this._actions = new ActionsGenerator(eventEmitter, this._gameUuid, this._playerId, this.turnGetter)
     this.players = [];
     this.eventHandlers = {
-      'AddedPlayer': this.sendToMachine,
+      'AddedPlayer': this.handleAddPlayer,
       'StartedGame': this.sendToMachine,
       'SubmittedClue': this.sendToMachine,
     }
-    // const machine = Machine(gameMachineConfig)
-    this.service = interpret(gameMachine).start();
+    this.phase = Phase.Pending;
   }
 
-  public get state(): string {
-    // console.log(this.service.state.value)
-    const state = this.service.state.value;
-    if (typeof state === 'string') {
-      return state
-    } else {
-      throw new Error('Game state should always be a string')
-    }
-  }
+  // public get phase(): Phase {
+    
+  // }
 
   public get actions(): ActionsGenerator {
     return this._actions;

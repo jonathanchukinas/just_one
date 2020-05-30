@@ -160,14 +160,6 @@ export type G_Schema = {
   }
 };
 
-export enum Phase {
-  Clues,
-  Dups,
-  Guess,
-  Judge,
-  Resolve
-}
-
 export type G_PublicState = {
   turnNumber: number,
   isGameRunning: boolean,
@@ -175,20 +167,12 @@ export type G_PublicState = {
   cards: CardState[],
 }
 
-export interface GameSchema {
-  states: {
-    signIn: {};
-    awaitingStartGame: {};
-    startGame: {};
-    startTurn: {};
-    clues: {};
-    checkCluesComplete: {};
-    duplicates: {};
-    guess: {};
-    judge: {};
-    endTurn: {};
-    endGame: {};
-  }
+export enum Phase {
+  Pending,
+  Clues,
+  Dups,
+  Guess,
+  Judge,
 }
 
 export interface GameContext {
