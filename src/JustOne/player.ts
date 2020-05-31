@@ -39,12 +39,10 @@ export class Player {
 
   get isCluePhaseReady(): boolean {
     switch (this.role) {
-      case PlayerRole.Guesser:
-        return true;
       case PlayerRole.ClueGiver:
         return this.hasClue();
       default: 
-        throw new Error('isCluePhaseReady should never be called if player has no role');
+        return true;
     }
   }
 

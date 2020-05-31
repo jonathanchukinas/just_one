@@ -123,4 +123,8 @@ export class Game {
     return Array.from(this._players.values())
   }
 
+  get turnGetter(): TurnGetter {
+    return this.turn.turnGetter;
+  }
+
 }

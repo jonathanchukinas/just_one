@@ -13,15 +13,6 @@ import {
 import { ActionsGenerator } from './actions'
 
 
-/**
- * Instantiate a game
- * write an eventSender that sends events to the Game
- * Instantiate an Actions with that sender
- * 
- */
-
-
-
 const game = new Game();
 function eventSender(event: Event) {
   game.handleEvent(event);
@@ -30,7 +21,7 @@ const actions = new ActionsGenerator(
   eventSender,
   generateUuid(),
   1,
-  () => 1
+  game.turnGetter,
 );  
   
 
@@ -52,7 +43,7 @@ it('start game', () => {
   
 it('submit clue', () => {
   actions.submitClue('carpet');
-  expect(game.phase).toEqual('duplicates')
+  expect(game.phase).toEqual(Phase.Dups)
 });  
   
 // it('reject dups', () => {
