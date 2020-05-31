@@ -10,9 +10,11 @@ import {
   Phase,
   StartedGame,
   SubmittedClue,
+  PlayerRole,
 } from './types';
 import { ActionsGenerator } from './actions'
 import { Player } from './player'
+import { Turn as TurnHandler } from './turn'
 
 
 function eventEmitter(event: Event): void {
@@ -31,31 +33,24 @@ export class Game {
   private _playerId: PlayerId
   private _observer: Observer
   private _actions: ActionsGenerator
-  private players: Player[]
-  private eventHandlers: {[key: string]: Function}
+  private _players: Map<PlayerId, Player>
   private state: {
     phase: Phase,
-    turnNum: number
   }
-  private clues: Clue[]
+  private turn: TurnHandler
+
 
   constructor() {
     this._eventSender = eventEmitter;
+    this.turn = new TurnHandler()
     this._gameUuid = generateUuid();
     this._playerId = 1;
     this._observer = nullObserver;
-    this._actions = new ActionsGenerator(eventEmitter, this._gameUuid, this._playerId, this.turnGetter)
-    this.players = [];
-    this.eventHandlers = {
-      'AddedPlayer': this.handleAddPlayer,
-      'StartedGame': this.handleStartGame,
-      'SubmittedClue': this.handleSubmitClue,
-    }
+    this._actions = new ActionsGenerator(eventEmitter, this._gameUuid, this._playerId, this.turn.turnGetter)
+    this._players = new Map();
     this.state = {
       phase: Phase.Pending,
-      turnNum: 0,
     }
-    this.clues = []
   }
 
   public get phase(): Phase {
@@ -70,48 +65,62 @@ export class Game {
     this._observer = observer;
   }
 
-  private get turnGetter(): TurnGetter {
-    return () => 1;
-  }
-
   public handleEvent(event: Event) {
-    const eventHandler = this.eventHandlers[event.type]
-    if (typeof eventHandler === 'undefined') {
-      throw new Error(`There is no event handler for ${event.type} yet!`)
+    // TODO handle: 
+    //  wrong turn, game
+    switch (this.phase) {
+      case Phase.Pending:
+        if (event.type === 'AddedPlayer') { this.addPlayer(event) }
+        if (event.type === 'StartedGame') { this.handleStartGame() }
+        break;
+      case Phase.Clues:
+        if (event.type === 'AddedPlayer') { this.addPlayer(event, PlayerRole.ClueGiver) }
+        if (event.type === 'SubmittedClue') { this.handleClue(event) }
+        break;
+      // case Phase.Dups:
+      //   if (event.type === 'AddedPlayer') { this.addPlayer(event) }
+      //   if (event.type === 'RejectedDuplicates') { this.handleStartGame() }
+      //   break;
+      default: 
+        throw new Error('Not all Phases are handled yet!')
     }
-    eventHandler.call(this, event)
   }
 
-  private handleAddPlayer(event: AddedPlayer) {
-    const newPlayer = new Player(event.playerId, event.playerName);
-    this.players.push(newPlayer);
+  private addPlayer(event: AddedPlayer, role: PlayerRole = PlayerRole.Unassigned) {
+    const { playerId, playerName } = event;
+    const newPlayer = new Player(playerId, playerName, this.turn.turnGetter);
+    newPlayer.role = role
+    this._players.set(playerId, newPlayer);
   }
 
-  private handleStartGame(event: StartedGame) {
+  private handleStartGame() {
     this.goToPhase(Phase.Clues)
   }
 
-  private handleSubmitClue(event: SubmittedClue) {
-    const newClue: Clue = {
-      value: event.clue,
-      status: Status.Active,
-      turnNum: this.state.turnNum
-    };
-    this.clues.push(newClue);
-    const arePlayersReady = ()=>{
-      this.clues.
-    }();
-    /**
-     * add clue
-     * check if all players have submitted clues
-     * if so, move to next phase
-     * else, stay
-     */
+  private handleClue(event: SubmittedClue) {
+    const player = this.getPlayer(event.playerId);
+    player.setClue(event);
+    const reducer = (isReady: boolean, player: Player) => isReady && player.isCluePhaseReady;
+    const areReady = this.players.reduce(reducer, true)
+    if (areReady) { this.goToPhase(Phase.Dups) }
   }
 
   private goToPhase(phase: Phase) {
     this.state.phase = phase;
-    if (phase === Phase.Clues) { this.state.turnNum = 1 + this.state.turnNum }
+    if (phase === Phase.Clues) { this.turn.increment() }
+  }
+
+  private getPlayer(playerId: PlayerId): Player {
+    const player = this._players.get(playerId);
+    if (typeof player === 'undefined') {
+      throw new Error('Player does not exist') 
+    } else {
+      return player
+    }
+  }
+
+  private get players(): Player[] {
+    return Array.from(this._players.values())
   }
 
 }

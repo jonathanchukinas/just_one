@@ -111,6 +111,10 @@ export class Player {
     return this.clues.has(turnNum)
   }
 
+  set role(value: PlayerRole) {
+    this.roles.set(this.turnGetter(), value);
+  }
+
   get role(): PlayerRole {
     const turnNum = this.turnGetter();
     const role = this.roles.get(turnNum);
