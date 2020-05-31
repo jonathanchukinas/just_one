@@ -30,7 +30,7 @@ export interface BaseEvent {
   sequenceId?: number; 
 };
 
-interface TurnEvent {
+export interface TurnEvent {
   turnNum: number;
 }
 
@@ -50,7 +50,7 @@ export interface SubmittedClue extends BaseEvent, TurnEvent {
 
 export interface RejectedDuplicates extends BaseEvent, TurnEvent {
   type: 'RejectedDuplicates';
-  duplicates: string[];
+  clues: string[];
 }
 
 export interface SubmittedGuess extends BaseEvent, TurnEvent {
@@ -117,25 +117,42 @@ export type T_Card = {
   PLAYER
 ************************************************/
 
-interface Player {
-  id: number,
-  name: string,
+export enum PlayerRole {
+  Unassigned,
+  ClueGiver,
+  // ClueLeader,
+  Guesser,
 }
 
 /************************************************
-  CLUE
+  CLUE, GUESS
 ************************************************/
 
-enum ClueStatus {
-  Active,
+export enum Status {
+  Pending,
+  Accepted,
   Rejected,
 }
 
-interface Clue {
+export interface Clue {
   value: string,
-  status: ClueStatus,
   turnNum: number,
+  status: Status,
 }
+
+export type Guess = {
+  value: string,
+  turnNum: number,
+  status: Status,
+} | {
+  turnNum: number,
+  status: 'skipped',
+}
+
+
+
+export type Clues = Map<TurnNum, Clue>
+export type Guesses = Map<TurnNum, Guess>
 
 /************************************************
   GAME

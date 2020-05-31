@@ -6,13 +6,13 @@ import {
   Event,
   TurnGetter,
   AddedPlayer,
-  GameContext,
+  Clue, Status,
   Phase,
   StartedGame,
+  SubmittedClue,
 } from './types';
 import { ActionsGenerator } from './actions'
 import { Player } from './player'
-import { Machine, MachineConfig, interpret, Interpreter } from 'xstate'
 
 
 function eventEmitter(event: Event): void {
@@ -24,10 +24,6 @@ type Observer = (event: Event) => void
 const nullObserver = (event: Event) => {}
 
 
-
-
-
-
 export class Game {
 
   private _eventSender: EventSender
@@ -37,7 +33,11 @@ export class Game {
   private _actions: ActionsGenerator
   private players: Player[]
   private eventHandlers: {[key: string]: Function}
-  readonly phase: Phase
+  private state: {
+    phase: Phase,
+    turnNum: number
+  }
+  private clues: Clue[]
 
   constructor() {
     this._eventSender = eventEmitter;
@@ -48,15 +48,19 @@ export class Game {
     this.players = [];
     this.eventHandlers = {
       'AddedPlayer': this.handleAddPlayer,
-      'StartedGame': this.sendToMachine,
-      'SubmittedClue': this.sendToMachine,
+      'StartedGame': this.handleStartGame,
+      'SubmittedClue': this.handleSubmitClue,
     }
-    this.phase = Phase.Pending;
+    this.state = {
+      phase: Phase.Pending,
+      turnNum: 0,
+    }
+    this.clues = []
   }
 
-  // public get phase(): Phase {
-    
-  // }
+  public get phase(): Phase {
+    return this.state.phase; 
+  }
 
   public get actions(): ActionsGenerator {
     return this._actions;
@@ -81,11 +85,33 @@ export class Game {
   private handleAddPlayer(event: AddedPlayer) {
     const newPlayer = new Player(event.playerId, event.playerName);
     this.players.push(newPlayer);
-    this.sendToMachine(event)
   }
 
-  private sendToMachine(event: Event) {
-    this.service.send(event)
+  private handleStartGame(event: StartedGame) {
+    this.goToPhase(Phase.Clues)
+  }
+
+  private handleSubmitClue(event: SubmittedClue) {
+    const newClue: Clue = {
+      value: event.clue,
+      status: Status.Active,
+      turnNum: this.state.turnNum
+    };
+    this.clues.push(newClue);
+    const arePlayersReady = ()=>{
+      this.clues.
+    }();
+    /**
+     * add clue
+     * check if all players have submitted clues
+     * if so, move to next phase
+     * else, stay
+     */
+  }
+
+  private goToPhase(phase: Phase) {
+    this.state.phase = phase;
+    if (phase === Phase.Clues) { this.state.turnNum = 1 + this.state.turnNum }
   }
 
 }

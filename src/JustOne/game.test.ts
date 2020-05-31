@@ -40,20 +40,20 @@ it('initial state', () => {
   expect(game.phase).toEqual(Phase.Pending)
 });  
   
-// it('add player', () => {
-//   actions.addPlayer('Maria');
-//   expect(game.state).toEqual('awaitingStartGame')
-// });  
+it('add player', () => {
+  actions.addPlayer('Maria');
+  expect(game.phase).toEqual(Phase.Pending)
+});  
   
-// it('start game', () => {
-//   actions.startGame();
-//   expect(game.state).toEqual('clues')
-// });  
+it('start game', () => {
+  actions.startGame();
+  expect(game.phase).toEqual(Phase.Clues)
+});  
   
-// it('submit clue', () => {
-//   actions.submitClue('carpet');
-//   expect(game.state).toEqual('duplicates')
-// });  
+it('submit clue', () => {
+  actions.submitClue('carpet');
+  expect(game.phase).toEqual('duplicates')
+});  
   
 // it('reject dups', () => {
 //   actions.rejectDuplicates(['carpet']);
