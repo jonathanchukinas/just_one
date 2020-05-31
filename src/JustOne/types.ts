@@ -1,6 +1,5 @@
 
 export type PlayerId = number;
-export type TurnNum = number;
 export type Uuid = string;
 
 /************************************************
@@ -83,7 +82,7 @@ export type Event =
   // | {type: ''}
 
 export type EventSender = (event: Event) => void;
-export type TurnGetter = () => TurnNum;
+
 
 /************************************************
   PUBSUB
@@ -94,6 +93,13 @@ export type Channel =
   | { type: 'Game' | 'AllPlayers' }
   | { type: 'Player', id: PlayerId }
 
+
+/************************************************
+  TURN
+************************************************/
+
+export type TurnNum = number;
+export type TurnGetter = () => TurnNum;
 
 /************************************************
   CARD
