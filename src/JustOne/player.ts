@@ -41,14 +41,16 @@ export class Player {
   }
 
   get isCluePhaseReady(): boolean {
+    let isReady = true
     if (this.isActive) {
       if (this.role === PlayerRole.ClueGiver) {
         if (!this.hasClue()) {
-          return false
+          isReady = false
         }
       }
     }
-    return true;
+    console.log(this.id, this.role, isReady)
+    return isReady;
   }
 
   get isActive(): boolean {
@@ -66,7 +68,7 @@ export class Player {
   }
 
   rejectDuplicate(event: RejectedDuplicates): void {
-    const { clues: duplicates, turnNum } = this.isCurrentTurn(event);
+    const { duplicates: duplicates, turnNum } = this.isCurrentTurn(event);
     const clue = this.clues.get(turnNum);
     if (typeof clue === 'undefined') { return }
     if (duplicates.includes(this.clue.value)) {
@@ -142,5 +144,6 @@ export class Player {
     if (event.turnNum === this.turnGetter()) { return event }
     throw new Error('Turn mismatch!');
   }
+
 
 }

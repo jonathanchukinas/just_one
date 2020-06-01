@@ -53,7 +53,7 @@ export interface SubmittedClue extends BaseEvent, TurnEvent {
 
 export interface RejectedDuplicates extends BaseEvent, TurnEvent {
   type: 'RejectedDuplicates';
-  clues: string[];
+  duplicates: string[];
 }
 
 export interface SubmittedGuess extends BaseEvent, TurnEvent {

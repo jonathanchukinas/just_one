@@ -10,19 +10,53 @@ import {
   GameContext,
   Phase,
 } from './types';
-import { ActionsGenerator } from './actions'
+import { EventGenerator } from './actions'
 
 
 const game = new Game();
 function eventSender(event: Event) {
   game.handleEvent(event);
 };
-const actions = new ActionsGenerator(
-  eventSender,
-  generateUuid(),
-  1,
-  game.turnGetter,
-);
+
+
+const playerNames = [
+  'Maria',
+  'James',
+  'Austin',
+  'Nicholas',
+  'Jonathan',
+  'Kristina',
+  'Mollie',
+]
+const players: EventGenerator[] = playerNames.map((name, index) => {
+  return new EventGenerator(
+    eventSender,
+    generateUuid(),
+    index + 1,
+    game.turnGetter,
+  );
+})
+
+const words = [
+  'water',
+  'boy',
+  'idea',
+  'lift',
+  'comfort',
+  'toys',
+  'silver',
+];
+
+
+// const players: EventGenerator[] = []
+// for (let playerId = 1; playerId <= 7; playerId++ ) {
+//   const player = new EventGenerator(
+//     eventSender,
+//     generateUuid(),
+//     playerId,
+//     game.turnGetter,
+//   );
+// }
 
 /**
  * (Note: this is for a simplified no-rooms version)
@@ -51,25 +85,31 @@ const actions = new ActionsGenerator(
  * Where in this scheme does the server have to alter/create events?
  */
   
-
-  
   
 it('initial state', () => {
   expect(game.phase).toEqual(Phase.Pending)
 });  
   
-it('add player', () => {
-  actions.addPlayer('Maria');
+it('add players and start game', () => {
+  players[1].addPlayer('Maria');
+  players[1].startGame();
   expect(game.phase).toEqual(Phase.Pending)
-});  
-  
-it('start game', () => {
-  actions.startGame();
+  players[2].addPlayer('James');
+  players[2].startGame();
+  expect(game.phase).toEqual(Phase.Pending)
+  players[3].addPlayer('Austin');
+  players[3].startGame();
+  expect(game.phase).toEqual(Phase.Pending)
+  players[4].addPlayer('Nicholas');
+  players[4].startGame();
   expect(game.phase).toEqual(Phase.Clues)
-});  
+});
   
 it('submit clue', () => {
-  actions.submitClue('carpet');
+  players[2].submitClue('carpet');
+  players[3].submitClue('carpet');
+  expect(game.phase).toEqual(Phase.Clues)
+  players[4].submitClue('carpet');
   expect(game.phase).toEqual(Phase.Dups)
 });  
   

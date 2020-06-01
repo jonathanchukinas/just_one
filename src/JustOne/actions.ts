@@ -9,7 +9,7 @@ import {
 import { v4 as generateUuid } from 'uuid';
 
 
-export class ActionsGenerator {
+export class EventGenerator {
 
   private eventSender: EventSender
   private _gameUuid: Uuid
@@ -42,7 +42,6 @@ export class ActionsGenerator {
       playerName,
       ...this.getBaseEvent(),
     }
-    console.log('calling addPlayer')
     this.eventSender(event)
   }
 

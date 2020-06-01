@@ -12,7 +12,7 @@ import {
   SubmittedClue,
   PlayerRole,
 } from './types';
-import { ActionsGenerator } from './actions'
+import { EventGenerator } from './actions'
 import { Player } from './player'
 import { Words } from './words'
 import { PlayerCollection } from './playerCollection'
@@ -34,7 +34,7 @@ export class Game {
   private _gameUuid: Uuid
   private _playerId: PlayerId
   private _observer: Observer
-  private _actions: ActionsGenerator
+  private _actions: EventGenerator
   private players: PlayerCollection
   private state: {
     phase: Phase,
@@ -48,7 +48,7 @@ export class Game {
     this._gameUuid = generateUuid();
     this._playerId = 1;
     this._observer = nullObserver;
-    this._actions = new ActionsGenerator(eventEmitter, this._gameUuid, this._playerId, this.turn.turnGetter)
+    this._actions = new EventGenerator(eventEmitter, this._gameUuid, this._playerId, this.turn.turnGetter)
     this.players = new PlayerCollection(this.turn.turnGetter);
     this.state = {
       phase: Phase.Pending,
@@ -60,7 +60,7 @@ export class Game {
     return this.state.phase; 
   }
 
-  public get actions(): ActionsGenerator {
+  public get actions(): EventGenerator {
     return this._actions;
   }
 
@@ -91,8 +91,6 @@ export class Game {
     }
   }
 
-
-
   private handleStartGame() {
     if (this.players.activePlayerCount >= 4) {
       this.goToPhase(Phase.Clues)
@@ -100,14 +98,18 @@ export class Game {
   }
 
   private handleClue(event: SubmittedClue) {
-    const player = this.players.get(event.playerId);
-    player.setClue(event);
+    const { playerId } = event;
+    this.players.get(playerId).setClue(event);
+    // console.log('areCluePhaseReady', this.players.areCluePhaseReady)
     if (this.players.areCluePhaseReady) { this.goToPhase(Phase.Dups) }
   }
 
   private goToPhase(phase: Phase) {
     this.state.phase = phase;
-    if (phase === Phase.Clues) { this.turn.increment() }
+    if (phase === Phase.Clues) {
+      this.turn.startNewTurn();
+      this.players.startNewTurn();
+    }
   }
 
   get turnGetter(): TurnGetter {

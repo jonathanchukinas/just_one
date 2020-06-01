@@ -47,4 +47,15 @@ export class PlayerCollection {
     this.players.set(playerId, newPlayer);
   }
 
+  public startNewTurn() {
+    // TODO this needs to be a little more sophisticated
+    this.players.forEach(player => {
+      if (player.id === 1) {
+        player.role = PlayerRole.Guesser;
+      } else {
+        player.role = PlayerRole.ClueGiver;
+      }
+    })
+  }
+
 }
