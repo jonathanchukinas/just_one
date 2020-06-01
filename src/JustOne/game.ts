@@ -1,71 +1,44 @@
-import { v4 as generateUuid } from 'uuid';
 import { 
-  EventSender,
-  Uuid,
+  GameId,
   PlayerId,
   Event,
   TurnGetter,
-  AddedPlayer,
-  Clue, Status,
   Phase,
-  StartedGame,
+  Observer,
   SubmittedClue,
   PlayerRole,
 } from './types';
-import { EventGenerator } from './actions'
-import { Player } from './player'
 import { Words } from './words'
 import { PlayerCollection } from './playerCollection'
 import { Turn as TurnHandler } from './turn'
 
-
-function eventEmitter(event: Event): void {
-
-}
-
-
-type Observer = (event: Event) => void
 const nullObserver = (event: Event) => {}
 
 
 export class Game {
 
-  private _eventSender: EventSender
-  private _gameUuid: Uuid
-  private _playerId: PlayerId
-  private _observer: Observer
-  private _actions: EventGenerator
+  private gameId: GameId
+  private observer: Observer
   private players: PlayerCollection
-  private state: {
-    phase: Phase,
-  }
+  private _phase: Phase
   private turn: TurnHandler
   private words: Words
 
-  constructor() {
-    this._eventSender = eventEmitter;
+  constructor(readonly playerId: PlayerId) {
     this.turn = new TurnHandler()
-    this._gameUuid = generateUuid();
-    this._playerId = 1;
-    this._observer = nullObserver;
-    this._actions = new EventGenerator(eventEmitter, this._gameUuid, this._playerId, this.turn.turnGetter)
     this.players = new PlayerCollection(this.turn.turnGetter);
-    this.state = {
-      phase: Phase.Pending,
-    }
     this.words = new Words();
+    this.gameId = 0;
+    this.observer = nullObserver;
+    this._phase = Phase.Pending
   }
 
   public get phase(): Phase {
-    return this.state.phase; 
-  }
-
-  public get actions(): EventGenerator {
-    return this._actions;
+    return this._phase; 
   }
 
   public registerObserver(observer: Observer): void {
-    this._observer = observer;
+    this.observer = observer;
   }
 
   public handleEvent(event: Event) {
@@ -93,6 +66,7 @@ export class Game {
 
   private handleStartGame() {
     if (this.players.activePlayerCount >= 4) {
+      this.gameId++
       this.goToPhase(Phase.Clues)
     }
   }
@@ -105,7 +79,7 @@ export class Game {
   }
 
   private goToPhase(phase: Phase) {
-    this.state.phase = phase;
+    this._phase = phase;
     if (phase === Phase.Clues) {
       this.turn.startNewTurn();
       this.players.startNewTurn();
@@ -115,6 +89,5 @@ export class Game {
   get turnGetter(): TurnGetter {
     return this.turn.turnGetter;
   }
-
 
 }

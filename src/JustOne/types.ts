@@ -166,7 +166,10 @@ export type Guesses = Map<TurnNum, Guess>
   GAME
 ************************************************/
 
-export type G_Player = {
+export type GameId = number;
+export type Observer = (event: Event) => void
+
+ type G_Player = {
   id: PlayerId,
   isReady: boolean,
   clue?: string,
