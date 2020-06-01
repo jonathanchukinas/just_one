@@ -90,14 +90,6 @@ export type Event =
 
 export type EventSender = (event: Event) => void;
 
-
-/************************************************
-  TURN
-************************************************/
-
-export type TurnNum = number;
-export type TurnGetter = () => TurnNum;
-
 /************************************************
   CARD
 ************************************************/
@@ -114,6 +106,14 @@ export type T_Card = {
   word: string,
   status: CardState,
   turn?: number,
+}
+
+/************************************************
+  USER
+************************************************/
+
+export interface userIdGetter {
+  readonly id: number
 }
 
 /************************************************
@@ -157,8 +157,6 @@ export type Guess = {
   status: 'skipped',
 }
 
-
-
 export type Clues = Map<TurnNum, Clue>
 export type Guesses = Map<TurnNum, Guess>
 
@@ -169,32 +167,6 @@ export type Guesses = Map<TurnNum, Guess>
 export type GameId = number;
 export type Observer = (event: Event) => void
 
- type G_Player = {
-  id: PlayerId,
-  isReady: boolean,
-  clue?: string,
-}
-
-export type G_Players = Map<PlayerId, G_Player>
-
-export type G_Context = {
-  round: number,
-};
-
-export type G_Schema = {
-  states: {
-    round: {},
-    endGame: {},
-  }
-};
-
-export type G_PublicState = {
-  turnNumber: number,
-  isGameRunning: boolean,
-  phase: Phase,
-  cards: CardState[],
-}
-
 export enum Phase {
   Pending,
   Clues,
@@ -203,8 +175,9 @@ export enum Phase {
   Judge,
 }
 
-export interface GameContext {
-  turnNum: number,
-  clues: Clue[],
-  players: Player[],
-}
+/************************************************
+  TURN
+************************************************/
+
+export type TurnNum = number;
+export type TurnGetter = () => TurnNum;
