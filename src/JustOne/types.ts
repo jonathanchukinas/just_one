@@ -38,6 +38,10 @@ export interface AddedPlayer extends BaseEvent {
   playerName: string;
 }
 
+export interface DisconnectedPlayer extends BaseEvent {
+  type: 'DisconnectedPlayer';
+}
+
 export interface StartedGame extends BaseEvent {
   type: 'StartedGame';
 }
@@ -69,6 +73,10 @@ export interface SkippedGuess extends BaseEvent, TurnEvent {
   type: 'SkippedGuess';
 }
 
+export interface EndGame extends BaseEvent {
+  type: 'EndedGame';
+}
+
 
 export type Event =
   | AddedPlayer
@@ -79,19 +87,8 @@ export type Event =
   | AcceptedGuess
   | RejectedGuess
   | SkippedGuess
-  // | {type: ''}
 
 export type EventSender = (event: Event) => void;
-
-
-/************************************************
-  PUBSUB
-************************************************/
-
-export type Channel =
-  // | { type: 'Global' }
-  | { type: 'Game' | 'AllPlayers' }
-  | { type: 'Player', id: PlayerId }
 
 
 /************************************************
@@ -128,6 +125,11 @@ export enum PlayerRole {
   ClueGiver,
   // ClueLeader,
   Guesser,
+}
+
+export enum Connection {
+  Active,
+  Broken,
 }
 
 /************************************************

@@ -14,6 +14,7 @@ import {
 } from './types';
 import { ActionsGenerator } from './actions'
 import { Player } from './player'
+import { PlayerCollection } from './playerCollection'
 import { Turn as TurnHandler } from './turn'
 
 
@@ -33,7 +34,7 @@ export class Game {
   private _playerId: PlayerId
   private _observer: Observer
   private _actions: ActionsGenerator
-  private _players: Map<PlayerId, Player>
+  private players: PlayerCollection
   private state: {
     phase: Phase,
   }
@@ -47,7 +48,7 @@ export class Game {
     this._playerId = 1;
     this._observer = nullObserver;
     this._actions = new ActionsGenerator(eventEmitter, this._gameUuid, this._playerId, this.turn.turnGetter)
-    this._players = new Map();
+    this.players = new PlayerCollection(this.turn.turnGetter);
     this.state = {
       phase: Phase.Pending,
     }
@@ -70,39 +71,34 @@ export class Game {
     //  wrong turn, game
     switch (this.phase) {
       case Phase.Pending:
-        if (event.type === 'AddedPlayer') { this.addPlayer(event) }
+        if (event.type === 'AddedPlayer') { this.players.add(event) }
         if (event.type === 'StartedGame') { this.handleStartGame() }
         break;
       case Phase.Clues:
-        if (event.type === 'AddedPlayer') { this.addPlayer(event, PlayerRole.ClueGiver) }
+        if (event.type === 'AddedPlayer') { this.players.add(event, PlayerRole.ClueGiver) }
         if (event.type === 'SubmittedClue') { this.handleClue(event) }
         break;
-      // case Phase.Dups:
-      //   if (event.type === 'AddedPlayer') { this.addPlayer(event) }
-      //   if (event.type === 'RejectedDuplicates') { this.handleStartGame() }
-      //   break;
+      case Phase.Dups:
+        break;
+      case Phase.Guess: 
+        break;
+      case Phase.Judge:
+        break;
       default: 
         throw new Error('Not all Phases are handled yet!')
     }
   }
 
-  private addPlayer(event: AddedPlayer, role: PlayerRole = PlayerRole.Unassigned) {
-    const { playerId, playerName } = event;
-    const newPlayer = new Player(playerId, playerName, this.turn.turnGetter);
-    newPlayer.role = role
-    this._players.set(playerId, newPlayer);
-  }
+
 
   private handleStartGame() {
     this.goToPhase(Phase.Clues)
   }
 
   private handleClue(event: SubmittedClue) {
-    const player = this.getPlayer(event.playerId);
+    const player = this.players.get(event.playerId);
     player.setClue(event);
-    const reducer = (isReady: boolean, player: Player) => isReady && player.isCluePhaseReady;
-    const areReady = this.players.reduce(reducer, true)
-    if (areReady) { this.goToPhase(Phase.Dups) }
+    if (this.players.areCluePhaseReady) { this.goToPhase(Phase.Dups) }
   }
 
   private goToPhase(phase: Phase) {
@@ -110,21 +106,9 @@ export class Game {
     if (phase === Phase.Clues) { this.turn.increment() }
   }
 
-  private getPlayer(playerId: PlayerId): Player {
-    const player = this._players.get(playerId);
-    if (typeof player === 'undefined') {
-      throw new Error('Player does not exist') 
-    } else {
-      return player
-    }
-  }
-
-  private get players(): Player[] {
-    return Array.from(this._players.values())
-  }
-
   get turnGetter(): TurnGetter {
     return this.turn.turnGetter;
   }
+
 
 }
