@@ -12,6 +12,7 @@ import {
   SkippedGuess,
   AcceptedGuess,
   RejectedGuess,
+  Connection,
 } from './types'
 
 
@@ -26,6 +27,7 @@ export class Player {
   public clues: Clues
   public guesses: Guesses
   private roles: Roles
+  private connection: Connection
 
   constructor(
     readonly id: PlayerId,
@@ -35,15 +37,22 @@ export class Player {
     this.clues = new Map;
     this.guesses = new Map;
     this.roles = new Map;
+    this.connection = Connection.Active
   }
 
   get isCluePhaseReady(): boolean {
-    switch (this.role) {
-      case PlayerRole.ClueGiver:
-        return this.hasClue();
-      default: 
-        return true;
+    if (this.isActive) {
+      if (this.role === PlayerRole.ClueGiver) {
+        if (!this.hasClue()) {
+          return false
+        }
+      }
     }
+    return true;
+  }
+
+  get isActive(): boolean {
+     return this.connection === Connection.Active
   }
 
   setClue(event: SubmittedClue) {

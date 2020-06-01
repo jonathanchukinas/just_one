@@ -14,6 +14,7 @@ import {
 } from './types';
 import { ActionsGenerator } from './actions'
 import { Player } from './player'
+import { Words } from './words'
 import { PlayerCollection } from './playerCollection'
 import { Turn as TurnHandler } from './turn'
 
@@ -39,7 +40,7 @@ export class Game {
     phase: Phase,
   }
   private turn: TurnHandler
-
+  private words: Words
 
   constructor() {
     this._eventSender = eventEmitter;
@@ -52,6 +53,7 @@ export class Game {
     this.state = {
       phase: Phase.Pending,
     }
+    this.words = new Words();
   }
 
   public get phase(): Phase {
@@ -92,7 +94,9 @@ export class Game {
 
 
   private handleStartGame() {
-    this.goToPhase(Phase.Clues)
+    if (this.players.activePlayerCount >= 4) {
+      this.goToPhase(Phase.Clues)
+    }
   }
 
   private handleClue(event: SubmittedClue) {

@@ -33,14 +33,14 @@ export class PlayerCollection {
     }
   }
 
-  public getActivePlayerCount() {
+  public get activePlayerCount(): number {
     const reducer = (activePlayerCount: number, player: Player) => {
-      return activePlayerCount + (player.isCluePhaseReady ? 1 : 0);
+      return activePlayerCount + (player.isActive ? 1 : 0);
     };
     return this.asArray.reduce(reducer, 0)
   }
 
-  public add(event: AddedPlayer, role: PlayerRole = PlayerRole.Unassigned) {
+  public add(event: AddedPlayer, role: PlayerRole = PlayerRole.Unassigned): void {
     const { playerId, playerName } = event;
     const newPlayer = new Player(playerId, playerName, this.turnGetter);
     newPlayer.role = role
