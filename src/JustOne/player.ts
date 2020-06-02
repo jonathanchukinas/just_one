@@ -5,13 +5,13 @@ import {
   Event, TurnEvent,
   Clue, Clues,
   Guess, Guesses,
-  SubmittedClue,
-  RejectedDuplicates,
+  SubmitClue,
+  RejectDups,
   Status,
-  SubmittedGuess,
-  SkippedGuess,
-  AcceptedGuess,
-  RejectedGuess,
+  SubmitGuess,
+  SkipGuess,
+  AcceptGuess,
+  RejectGuess,
   Connection,
 } from './types'
 
@@ -57,7 +57,7 @@ export class Player {
      return this.connection === Connection.Active
   }
 
-  setClue(event: SubmittedClue) {
+  setClue(event: SubmitClue) {
     const { clue: value, turnNum } = this.isCurrentTurn(event);
     const clue: Clue = {
       value,
@@ -67,7 +67,7 @@ export class Player {
     this.clues.set(turnNum, clue)
   }
 
-  rejectDuplicate(event: RejectedDuplicates): void {
+  rejectDups(event: RejectDups): void {
     const { duplicates: duplicates, turnNum } = this.isCurrentTurn(event);
     const clue = this.clues.get(turnNum);
     if (typeof clue === 'undefined') { return }
@@ -78,7 +78,7 @@ export class Player {
     }
   }
 
-  setGuess(event: SubmittedGuess) {
+  setGuess(event: SubmitGuess) {
     const { guess: value, turnNum } = this.isCurrentTurn(event);
     const newGuess = {
       value,
@@ -106,7 +106,7 @@ export class Player {
     }
   }    
 
-  skipGuess(event: SkippedGuess) {
+  skipGuess(event: SkipGuess) {
     const { turnNum } = this.isCurrentTurn(event);
     const newSkip: Guess = {
       turnNum,
@@ -145,5 +145,8 @@ export class Player {
     throw new Error('Turn mismatch!');
   }
 
+  deactivate() {
+    this.connection = Connection.Broken
+  }
 
 }

@@ -38,7 +38,7 @@ export class EventGenerator {
 
   addPlayer(playerName: string) {
     const event: Event = {
-      type: 'AddedPlayer',
+      type: 'AddPlayer',
       playerName,
       ...this.getBaseEvent(),
     }
@@ -47,7 +47,7 @@ export class EventGenerator {
 
   startGame() {
     const event: Event = {
-      type: 'StartedGame',
+      type: 'StartGame',
       ...this.getBaseEvent(),
     }
     this.eventSender(event)
@@ -55,7 +55,7 @@ export class EventGenerator {
 
   submitClue(clue: string) {
     const event: Event = {
-      type: 'SubmittedClue',
+      type: 'SubmitClue',
       turnNum: this._turnNum(),
       clue,
       ...this.getBaseEvent(),
@@ -65,7 +65,7 @@ export class EventGenerator {
 
   rejectDuplicates(duplicates: string[]) {
     const event: Event = {
-      type: 'RejectedDuplicates',
+      type: 'RejectDups',
       turnNum: this._turnNum(),
       duplicates,
       ...this.getBaseEvent(),
@@ -75,7 +75,7 @@ export class EventGenerator {
 
   submitGuess(guess: string) {
     const event: Event = {
-      type: 'SubmittedGuess',
+      type: 'SubmitGuess',
       turnNum: this._turnNum(),
       guess,
       ...this.getBaseEvent(),
@@ -85,7 +85,7 @@ export class EventGenerator {
 
   rejectGuess() {
     const event: Event = {
-      type: 'RejectedGuess',
+      type: 'RejectGuess',
       turnNum: this._turnNum(),
       ...this.getBaseEvent(),
     }
@@ -94,7 +94,7 @@ export class EventGenerator {
 
   skipGuess() {
     const event: Event = {
-      type: 'SkippedGuess',
+      type: 'SkipGuess',
       turnNum: this._turnNum(),
       ...this.getBaseEvent(),
     }

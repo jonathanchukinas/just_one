@@ -1,7 +1,7 @@
 import {
-  SkippedGuess,
-  AcceptedGuess,
-  RejectedGuess,
+  SkipGuess,
+  AcceptGuess,
+  RejectGuess,
 } from './types'
 
 
@@ -38,8 +38,8 @@ export class Words {
     return this.words[this.currentIndex]
   }
 
-  resolve(event: AcceptedGuess | RejectedGuess | SkippedGuess) {
-    this.currentIndex += (event.type === 'RejectedGuess' ? 2 : 1)
+  resolve(event: AcceptGuess | RejectGuess | SkipGuess) {
+    this.currentIndex += (event.type === 'RejectGuess' ? 2 : 1)
   }
 
 }

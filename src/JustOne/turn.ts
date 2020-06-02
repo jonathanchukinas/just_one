@@ -18,7 +18,7 @@ export class Turn {
     return this.turnNum;
   }
 
-  startNewTurn(): TurnNum {
+  increment(): TurnNum {
     this.turnNum += 1;
     return this.turnNum;
   }

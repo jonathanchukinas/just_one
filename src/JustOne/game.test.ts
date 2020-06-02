@@ -6,7 +6,7 @@ import {
   PlayerId,
   Event,
   TurnGetter,
-  AddedPlayer,
+  AddPlayer,
   GameContext,
   Phase,
 } from './types';
@@ -110,7 +110,7 @@ it('submit clue', () => {
   players[3].submitClue('carpet');
   expect(game.phase).toEqual(Phase.Clues)
   players[4].submitClue('carpet');
-  expect(game.phase).toEqual(Phase.Dups);
+  expect(game.phase).toEqual(Phase.Dupls);
 });  
   
 // it('reject dups', () => {
