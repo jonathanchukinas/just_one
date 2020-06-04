@@ -1,6 +1,6 @@
 import {
   PlayerId,
-  PlayerRole,
+  Role,
   TurnNum, TurnGetter,
   Event, TurnEvent,
   Clue, Clues,
@@ -13,13 +13,14 @@ import {
   AcceptGuess,
   RejectGuess,
   Connection,
+  PlayerState,
 } from './types'
 
 
 const NullClue = Symbol();
 
 
-type Roles = Map<TurnNum, PlayerRole>
+type Roles = Map<TurnNum, Role>
 
 
 export class Player {
@@ -43,18 +44,19 @@ export class Player {
   get isCluePhaseReady(): boolean {
     let isReady = true
     if (this.isActive) {
-      if (this.role === PlayerRole.ClueGiver) {
+      if (this.role === Role.ClueGiver) {
         if (!this.hasClue()) {
           isReady = false
         }
       }
     }
-    console.log(this.id, this.role, isReady)
+    // console.log(this.id, this.role, isReady)
     return isReady;
   }
 
   get isActive(): boolean {
-     return this.connection === Connection.Active
+    // console.log('is active?')
+    return this.connection === Connection.Active
   }
 
   setClue(event: SubmitClue) {
@@ -120,15 +122,15 @@ export class Player {
     return this.clues.has(turnNum)
   }
 
-  set role(value: PlayerRole) {
+  set role(value: Role) {
     this.roles.set(this.turnGetter(), value);
   }
 
-  get role(): PlayerRole {
+  get role(): Role {
     const turnNum = this.turnGetter();
     const role = this.roles.get(turnNum);
     if (typeof role === 'undefined') {
-      return PlayerRole.Unassigned;
+      return Role.Unassigned;
     } else {
       return role;
     }
@@ -149,4 +151,12 @@ export class Player {
     this.connection = Connection.Broken
   }
 
+  getState(): PlayerState {
+    const state: PlayerState = {
+      id: this.id,
+      name: this.name,
+      role: this.role
+    }
+    return state;
+  }
 }

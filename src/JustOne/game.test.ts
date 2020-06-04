@@ -5,9 +5,6 @@ import {
   Uuid,
   PlayerId,
   Event,
-  TurnGetter,
-  AddPlayer,
-  GameContext,
   Phase,
 } from './types';
 import { EventGenerator } from './actions'
@@ -86,34 +83,47 @@ const words = [
  */
   
   
-it('initial state', () => {
-  expect(game.phase).toEqual(Phase.Pending)
+it('Pending', () => {
+  expect(game.state.phase).toEqual(Phase.Pending)
 });  
   
-it('add players and start game', () => {
+it('Pending -> Clues', () => {
   players[1].addPlayer('Maria');
   players[1].startGame();
-  expect(game.phase).toEqual(Phase.Pending)
+  expect(game.state.phase).toEqual(Phase.Pending)
   players[2].addPlayer('James');
   players[2].startGame();
-  expect(game.phase).toEqual(Phase.Pending)
+  expect(game.state.phase).toEqual(Phase.Pending)
   players[3].addPlayer('Austin');
   players[3].startGame();
-  expect(game.phase).toEqual(Phase.Pending)
+  expect(game.state.phase).toEqual(Phase.Pending)
   players[4].addPlayer('Nicholas');
   players[4].startGame();
-  expect(game.phase).toEqual(Phase.Clues)
+  // console.log(game.state)
+  expect(game.state.phase).toEqual(Phase.Clues)
 });
   
-it('submit clue', () => {
+it('Clues -> Dups', () => {
+  // players[1].submitClue('carpet');
   players[2].submitClue('carpet');
   players[3].submitClue('carpet');
-  expect(game.phase).toEqual(Phase.Clues)
+  expect(game.state.phase).toEqual(Phase.Clues)
   players[4].submitClue('carpet');
-  expect(game.phase).toEqual(Phase.Dupls);
+  expect(game.state.phase).toEqual(Phase.Dupls);
 });  
   
-// it('reject dups', () => {
-//   actions.rejectDuplicates(['carpet']);
-//   expect(game.state).toEqual('duplicates')
-// });  
+it('Dups -> Guess', () => {
+  players[2].rejectDuplicates(['carpet']);
+  expect(game.state.phase).toEqual(Phase.Guess);
+});  
+  
+it('Guess -> Judge', () => {
+  console.log(game.state)
+  players[1].submitGuess('Arabia');
+  expect(game.state.phase).toEqual(Phase.Judge);
+});  
+  
+it('Judge -> End Turn', () => {
+  players[2].rejectGuess();
+  expect(game.state.phase).toEqual(Phase.TurnEnd);
+});  

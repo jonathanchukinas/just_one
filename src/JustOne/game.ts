@@ -9,6 +9,8 @@ import {
   RejectDups,
   SubmitGuess,
   SkipGuess,
+  GameState,
+  TurnGetter,
 } from './types';
 import { Words } from './words'
 import { PlayerCollection } from './playerCollection'
@@ -20,7 +22,7 @@ type EventType = Event['type'];
 type EventHandler = (event: Event)=>void;
 type Pattern = [PermittedPhase, EventType, EventHandler]
 const nullHandler: EventHandler = ()=> {}
-const nullObserver = (event: Event) => {}
+const nullObserver = (gameState: GameState) => {}
 
 
 export class Game {
@@ -32,7 +34,7 @@ export class Game {
   private turn: TurnHandler
   private words: Words
 
-  constructor(readonly playerId: PlayerId) {
+  constructor() {
     this.turn = new TurnHandler()
     this.players = new PlayerCollection(this.turn.turnGetter);
     this.words = new Words();
@@ -41,29 +43,39 @@ export class Game {
     this._phase = Phase.Pending
   }
 
-  public get phase(): Phase {
-    return this._phase; 
-  }
-
   /************************************************
-   OBSERVER
-   ************************************************/
+   OBSERVER & STATE
+  ************************************************/
+
+  get state(): GameState {
+    return {
+      turnNum: this.turn.get(),
+      phase: this._phase,
+      players: this.players.getState()
+    }
+  }
 
   registerObserver(observer: Observer): void {
     this.observer = observer;
   }
   
   private notifyObserver() {
-    //
+    this.observer(this.state)
+  }
+
+  get turnGetter(): TurnGetter {
+    return this.turn.turnGetter;
   }
 
   /************************************************
     EVENT ROUTING
   ************************************************/
 
-  handleEvent(event: Event) {    
+  handleEvent(event: Event) {
+    // console.log(event)
     if (this.isGameInSync(event) && this.isTurnInSync(event)) {
       const eventHandler = this.getEventHandler(event);
+      // console.log(eventHandler)
       eventHandler(event);
       this.notifyObserver();
     }
@@ -100,7 +112,9 @@ export class Game {
     ]    
     let eventHandler = nullHandler;
     for (const [phase, type, handler] of patterns) {
-      if (phase in [this._phase, 'AnyPhase'] && type === event.type) {
+      // console.log("phase in [this._phase, 'AnyPhase']", [this._phase, 'AnyPhase'].includes(phase))
+      // console.log("phase", phase)
+      if ([this._phase, 'AnyPhase'].includes(phase) && type === event.type) {
         eventHandler = handler;
         break;
       }
@@ -128,6 +142,7 @@ export class Game {
   ************************************************/
   
   private addPlayer(event: Event) {
+    // console.log('adding player!')
     this.players.activate(event as AddPlayer)
   }
 
@@ -136,9 +151,11 @@ export class Game {
   }
 
   private startGame(event: Event) {
+    // console.log('start game?', this.players.activePlayerCount)
     if (this.players.activePlayerCount >= 4) {
       this.gameId++
       this.goToPhase(Phase.Clues)
+      // console.log('yes!')
     }
   }
 
